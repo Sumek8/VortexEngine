@@ -1,0 +1,464 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Widgets">
+      <UniqueIdentifier>{5453926e-47f4-44a2-a1ce-8ca396e2115d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Rendering">
+      <UniqueIdentifier>{4544eed4-6dde-47b4-b335-f9689a1d2dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Widget">
+      <UniqueIdentifier>{915215f4-7359-4073-9da0-c7c245937400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Renderer">
+      <UniqueIdentifier>{9d31702e-37c1-4d18-8a6b-d2cb007e99c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Object">
+      <UniqueIdentifier>{5c9c5a6b-5fcf-4f2c-9452-19b9868531ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Shaders">
+      <UniqueIdentifier>{55e5957c-22d3-4971-b05c-6f9111705352}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Resource">
+      <UniqueIdentifier>{0b82950b-952b-45ef-b37e-007490546828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\System">
+      <UniqueIdentifier>{962b2769-f4c0-4af5-baf5-6c41dcdcfa77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Object">
+      <UniqueIdentifier>{d1655b91-29b0-409a-9f86-3464096efcd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Resource">
+      <UniqueIdentifier>{5023d9cb-6eb4-4a04-8fa9-36140ad842e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\System">
+      <UniqueIdentifier>{22e6b245-dcd4-402a-bcd3-ef4ba84cfbbf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="fbxsdk.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="WidgetManager.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Widget.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="D3Dclass.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthShader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraClass.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRShaderClass.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMesh.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXImportManager.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshActor.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemDebugger.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemClass.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="VortexEngine.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWidget.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="LineShader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="WidgetShader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWidgetSlot.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessShader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="ContentBrowser.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Pliki nagłówkowe\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Delegate.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="TickBox.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldOutliner.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveMaster.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialMaster.h">
+      <Filter>Pliki nagłówkowe\System</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshActor.h">
+      <Filter>Pliki nagłówkowe\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMesh.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBox.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Panel.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="DetailPanel.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Composer.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlinerRow.h">
+      <Filter>Pliki nagłówkowe\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmo.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Pliki nagłówkowe\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBodyComponent.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Button.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Widget.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="WidgetManager.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DClass.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshActor.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthShader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraClass.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRShaderClass.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMesh.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXImportManager.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemDebugger.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemClass.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="VortexEngine.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="WidgetShader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWidget.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="LineShader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWidgetSlot.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessShader.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialMaster.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="ContentBrowser.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Pliki źródłowe\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldOutliner.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveMaster.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="TickBox.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshActor.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMesh.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Composer.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBox.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlinerRow.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Panel.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="DetailPanel.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmo.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBodyComponent.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VortexEngine.rc">
+      <Filter>Pliki zasobów</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="VortexEngine.ico">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\CommonPixelShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\CommonVertexShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredPixelShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredVertexShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredMergedOutput.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\WidgetShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LineShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PostProcessBase.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\TextShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredSkinnedVertexShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BillBoardShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Fxaa3_11.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
