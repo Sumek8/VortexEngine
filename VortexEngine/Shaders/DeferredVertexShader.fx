@@ -74,6 +74,7 @@ PixelInputType VertexShaderFunction(VertexInputType input)
 	//output.viewDirection = CameraPosition.xyz - WorldPosition.xyz;
 	//output.viewDirection = normalize(output.viewDirection);
 	output.WorldPosition = WorldPosition;
+	
     return output;
 }
 

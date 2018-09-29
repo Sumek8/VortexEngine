@@ -153,10 +153,11 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 					// Set 0 or 1 for True or false
 
 	char* bColorMap = "1";
+	char* bEmission = "0";
 
 	D3D_SHADER_MACRO Shader_Macros[] = {
 		"BASECOLORMAP",bColorMap,
-		"EMISSION","0",
+		"EMISSION",bEmission,
 		"NORMALMAP","1",
 		
 	nullptr, nullptr };
@@ -669,7 +670,7 @@ void PBRShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexC
 	
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 
-	//deviceContext->DrawIndexedInstanced(indexCount,5000,0,0,0);
+	//deviceContext->DrawIndexedInstanced(indexCount,2000,0,0,0);
 	
 
 	return;

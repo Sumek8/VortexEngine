@@ -99,8 +99,19 @@ PixelOutputType   PixelShaderFunction(PixelInputType input)
 #endif
 
 #if EMISSION
-	Color = BaseColor;
-	//return color;
+	
+	
+	
+	
+	float4 Color = float4(0, 0, 0, 0);
+		Color = BaseColor;
+
+	Out.Color = BaseColor;
+	//Out.Color = pow(Out.Color, 1 / 2.2);
+	Out.Position.xyz = input.viewDirection;
+	Out.Depth = input.position.z / input.position.w;
+	Out.Normal.xyz = input.normal;
+	return Out;
 #endif
 	
 

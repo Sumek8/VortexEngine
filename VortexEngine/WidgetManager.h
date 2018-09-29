@@ -31,6 +31,13 @@ struct LinePoint
 	VColor color;
 };
 
+struct ThemeColors
+{
+	VColor BaseColor;
+	VColor OutlineColor;
+
+
+};
 
 struct WidgetVertex
 {
@@ -133,6 +140,8 @@ public:
 	Widget* GetClickedWidget(float inMouseX, float inMouseY,int WindowID);
 	Widget* DragWidget;
 	Widget* ActiveWidget;
+
+
 
 	vector<WidgetContainer*>WidgetContainers;
 private:

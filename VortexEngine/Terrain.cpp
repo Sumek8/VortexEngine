@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "Terrain.h"
-
+#include "ResourceManager.h"
 
 Terrain::Terrain()
 {
 }
 
 
-StaticMesh* Terrain::GenerateTerrain(int Resolution, float Spacing)
+StaticMesh*  Terrain::GenerateTerrain(int Resolution, float Spacing)
 {
 
 
@@ -81,6 +81,71 @@ StaticMesh* Terrain::GenerateTerrain(int Resolution, float Spacing)
 	return VMesh;
 
 }
+
+
+StaticMesh* Terrain::CreateTerrain(int SizeX, int SizeY,float Height)
+{
+	int Resolution = 120;
+	
+	VBitmap HeightMap = ResourceManager::ImportPNG("Content/Heightmap2.PNG");
+	
+	StaticMesh* Mesh = Terrain::GenerateTerrain((Resolution - 1)*SizeX, 0.1f);
+
+	Mesh->SetName("Terrain");
+	
+
+	float scale = float(HeightMap.Height) / float(Resolution);
+	int j, k;
+	j = 0;
+	if (scale < 1)
+		return 0;
+	for (size_t i = 0; i < Mesh->GetModel()->Chunks[0]->Vertices.size(); i++)
+	{
+		j = int(i / (Resolution));
+
+		k = (int(i*scale) + j * int(scale - 1)*(HeightMap.Width));
+
+
+		Mesh->GetModel()->Chunks[0]->Vertices[i].position.z = float(HeightMap.ColorData[k]) / 256 * Height;
+
+	}
+	size_t VertSize = Mesh->GetModel()->Chunks[0]->Vertices.size();
+	for (size_t i = 0; i < VertSize; i++)
+	{
+		float P, PL, PR, PU, PD;
+		PD = 0;
+		PL = 0;
+		PR = 0;
+		PU = 0;
+
+		P = Mesh->GetModel()->Chunks[0]->Vertices[i].position.z;
+		if (i > 0)
+			PL = Mesh->GetModel()->Chunks[0]->Vertices[i - 1].position.z;
+		if (i < (VertSize - 1))
+			PR = Mesh->GetModel()->Chunks[0]->Vertices[i + 1].position.z;
+		if (i < VertSize - Resolution)
+			PU = Mesh->GetModel()->Chunks[0]->Vertices[i + Resolution].position.z;
+		if (i > Resolution)
+			PD = Mesh->GetModel()->Chunks[0]->Vertices[i - Resolution].position.z;
+
+		float hL = P - PL;
+		float hR = P - PR;
+		float hD = P - PD;
+		float hU = P - PU;
+		VVector N;
+		// Compute terrain normal
+		N.x = hL - hR;
+		N.y = hD - hU;
+		N.z = 2.0;
+		N.Normalize();
+		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.x = N.x;
+		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.y = N.y;
+		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.z = N.z;
+	}
+
+	return Mesh;
+}
+
 
 Terrain::~Terrain()
 {

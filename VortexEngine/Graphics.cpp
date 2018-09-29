@@ -332,6 +332,7 @@ bool Graphics::Render()
 				if (StaticActor)
 					if (StaticActor->bCastDynamicShadows && StaticActor->bIsVisible)
 					{
+						
 						StaticActor->CalculateMatrix();
 						worldMatrix = StaticActor->WorldMatrix;
 

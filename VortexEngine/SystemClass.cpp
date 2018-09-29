@@ -342,68 +342,15 @@ void SystemClass::CreateWidgetManager()
 }
 void SystemClass::GenerateTerrain()
 {
-	int Resolution = 120;
-	float Height = 2;
+	
+
 	Terrain VTerrain;
-	StaticMesh* Mesh = VTerrain.GenerateTerrain(Resolution-1,0.1f);
-
-
-	VBitmap Bitmap = ResourceManager::ImportPNG("Content/Heightmap2.PNG");
+	StaticMesh* TerrainMesh = VTerrain.CreateTerrain(1,1,1);
 	
-	float scale = float(Bitmap.Height) / float(Resolution);
-	int j,k;
-	j = 0;
-	if (scale < 1)
-		return;
-	for (size_t i = 0; i < 	Mesh->GetModel()->Chunks[0]->Vertices.size(); i++)
-	{	
-		j = int(i / (Resolution));
-	
-		k = (i*scale+j*int(scale-1)*(Bitmap.Width));
 
-
-			Mesh->GetModel()->Chunks[0]->Vertices[i].position.z = float(Bitmap.ColorData[k]) / 255 * Height;
-			
-	}
-	size_t VertSize = Mesh->GetModel()->Chunks[0]->Vertices.size();
-	for (size_t i = 0; i <VertSize; i++)
-	{
-		float P, PL, PR, PU, PD;
-		PD = 0;
-		PL = 0;
-		PR = 0;
-		PU = 0;
-		
-		P = Mesh->GetModel()->Chunks[0]->Vertices[i].position.z;
-		if(i >0)
-		PL = Mesh->GetModel()->Chunks[0]->Vertices[i-1].position.z;
-		if (i < (VertSize-1))
-		PR = Mesh->GetModel()->Chunks[0]->Vertices[i+1].position.z;
-		if (i  < VertSize - Resolution)
-		PU = Mesh->GetModel()->Chunks[0]->Vertices[i+Resolution].position.z;
-		if (i  > Resolution)
-		PD = Mesh->GetModel()->Chunks[0]->Vertices[i- Resolution].position.z;
-		
-		float hL = P - PL;
-		float hR = P - PR;
-		float hD = P - PD;
-		float hU = P - PU;
-		VVector N;
-		// Compute terrain normal
-		N.x = hL - hR;
-		N.y = hD - hU;
-		N.z = 2.0;
-		N.Normalize();
-		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.x = N.x;
-		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.y = N.y;
-		Mesh->GetModel()->Chunks[0]->Vertices[i].normal.z = N.z;
-	}
-
-
-	VGraphics->CreateChunkBuffers(Mesh->GetModel());
-	VResourceManager->AddStaticMesh(Mesh);
-	Mesh->SetName("Terrain");
-	VResourceManager->GetWorld(0)->CreateStaticMeshActor(VResourceManager->GetStaticMeshByName(Mesh->GetName()));
+	VGraphics->CreateChunkBuffers(TerrainMesh->GetModel());
+	VResourceManager->AddStaticMesh(TerrainMesh);
+	VResourceManager->GetWorld(0)->CreateStaticMeshActor(VResourceManager->GetStaticMeshByName(TerrainMesh->GetName()));
 	VResourceManager->GetWorld(0)->UpdateStaticMeshPolycount();
 	
 	UpdateOutliner();
@@ -411,6 +358,8 @@ void SystemClass::GenerateTerrain()
 	UpdateInterface();
 	
 	return;
+
+	
 }
 
 void SystemClass::Shutdown()
@@ -2118,15 +2067,13 @@ bool SystemClass::ImportFileFromPath(const char*  FilePath)
 			VModel->SetName(FileName);
 			StaticMesh* VStaticMesh;
 			VStaticMesh = new StaticMesh;
-			//VModel->CreateBoundingSphere();
+			VModel->CreateBoundingSphere();
 			VGraphics->CreateChunkBuffers(VModel);
 			
 			VModel->UpdateIndexCount();
 			VStaticMesh->SetModel(VModel);
 			VResourceManager->AddStaticMesh(VStaticMesh);
-		
-				//VResourceManager->GetWorld(0)->CreateStaticMeshActor(VStaticMesh);		
-				
+			
 			UpdateOutliner();
 			UpdateInterface();
 				

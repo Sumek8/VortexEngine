@@ -97,7 +97,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxgi.lib;wininet.lib;libfbxsdk.lib;libpngd_64.lib;libpng_64.lib;zlib_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <FxCompile>
@@ -120,7 +120,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxgi.lib;wininet.lib;libfbxsdk.lib;libpngd_64.lib;libpng_64.lib;zlib_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\c++\VortexEngine\VortexEngine\ThirdParty\FBX SDK\2018.1.1\lib\vs2015\x64\release;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\c++\VortexEngine\VortexEngine\Lib;C:\c++\VortexEngine\VortexEngine\ThirdParty\FBX SDK\2018.1.1\lib\vs2015\x64\release;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
@@ -153,7 +153,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxgi.lib;wininet.lib;libfbxsdk.lib;libpngd_64.lib;libpng_64.lib;zlib_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <FxCompile>
@@ -180,7 +180,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxgi.lib;wininet.lib;libfbxsdk.lib;libpngd_64.lib;libpng_64.lib;zlib_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.16299.0\um\x64;C:\c++\VortexEngine\VortexEngine\Lib\libPNG\lib\Win64\VS2015;C:\c++\VortexEngine\VortexEngine\Lib;C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <FxCompile>
