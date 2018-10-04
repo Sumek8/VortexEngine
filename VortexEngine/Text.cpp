@@ -7,6 +7,7 @@ Text::Text()
 	bIsEnabled = false;
 	Type = TextWidget;
 	Color = VColor(1, 1, 1, 1);
+	
 }
 
 string Text::GetText()

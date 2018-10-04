@@ -10,3 +10,8 @@ TickBox::TickBox()
 TickBox::~TickBox()
 {
 }
+
+void TickBox::SetCheckReference(bool CheckedRef)
+{
+	isChecked = CheckedRef;
+}

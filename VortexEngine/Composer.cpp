@@ -9,7 +9,8 @@ Composer::Composer()
 	bIsEnabled = true;
 	bIsVisible = false;
 	bIsHorizontal = false;
-	
+
+	DistributionArray = { 0.5f,0.5f };
 }
 
 void Composer::SetIsHorizontal(bool bIsHorizontalSplit)
@@ -183,9 +184,9 @@ void Composer::RecalculateWindow()
 		if( ActiveSeparatorID == 0)
 			if (bIsHorizontal)
 			{
-
+				
 				Position = GetChildWidget(SeparatorIndex)->GetRelativeTransform().x + SeparatorSize / 2;
-	
+				
 				float Distribution = DistributionArray[ActiveSeparatorID] + DistributionArray[ActiveSeparatorID + 1];
 				DistributionArray[ActiveSeparatorID] = Position / Size.x;
 				DistributionArray[ActiveSeparatorID + 1] = Distribution - (Position / Size.x);

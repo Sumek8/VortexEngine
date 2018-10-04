@@ -9,7 +9,6 @@
 #include <fbxsdk.h>
 
 
-//using namespace DirectX;
 class ResourceManager;
 class Model;
 class Skeleton;
@@ -25,11 +24,11 @@ public:
 	FBXImportManager();
 	~FBXImportManager();
 
-	Model*	      InitializeFBXManager(const char* ModelPath);
-	Animation *   ImportAnimation();
-	Skeleton*	  CreateSkeleton(FbxNode* SkeletonRoot);
-	Model*        ImportModel(FbxMesh* ImportMesh, FbxNode* Geometry);
-	SkeletalMesh* ImportSkeletalMesh(FbxMesh& SkeletalMeshNode,Skeleton* VSkeleton);
+	Model*			InitializeFBXManager(const char* ModelPath);
+	Animation *		ImportAnimation();
+	Skeleton*		CreateSkeleton(FbxNode* SkeletonRoot);
+	Model*			ImportModel(FbxMesh* ImportMesh, FbxNode* Geometry);
+	SkeletalMesh*	ImportSkeletalMesh(FbxMesh& SkeletalMeshNode,Skeleton* VSkeleton);
 	
 private:
 	bool bShouldImportSkeleton;

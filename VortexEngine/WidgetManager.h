@@ -130,7 +130,7 @@ public:
 	void	 CloseContentBrowser();
 	void	 RemoveWidget(string);
 	void	 ClearContainersArray();
-	static WidgetManager* GetWidgetManager();
+	static   WidgetManager* GetWidgetManager();
 
 	void	 CreateInterface();
 

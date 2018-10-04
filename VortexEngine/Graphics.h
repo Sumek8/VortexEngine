@@ -1,9 +1,23 @@
 #pragma once
+
+#define DIRECTX = true
+#define WINDOWS = true
+
+
+#ifdef WINDOWS
 #include <windows.h>
-#include <d3d11.h>
+#endif // WINDOWS
+
+
+
 
 #include "Math.h"
+
+#ifdef DIRECTX
+#include <d3d11.h>
 #include "D3DClass.h"
+#endif 
+
 
 #include "DirectionalLight.h"
 #include "Cameraclass.h"
@@ -63,7 +77,9 @@ public:
 	void RenderBuffers(ID3D11DeviceContext* deviceContext,ID3D11Buffer* vertexBuffer, ID3D11Buffer* IndexBuffer);
 	void RenderWidgetBuffers(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer);
 	void ToggleWireframe();
-	
+
+
+
 	void SetResourceManager(ResourceManager* SrcManager);
 	void SetWidgetManager(WidgetManager* VWidgetManager);
 	void RenderLines(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer);
@@ -123,6 +139,7 @@ private:
 	ID3D11Buffer*	 LineIndexBuffer;
 
 	int				 screenWidth,screenHeight;
+
 	bool			 DrawInterface = true;
 public:
 	MaterialMaster*	 VMaterialMaster;

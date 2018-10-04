@@ -15,7 +15,8 @@
 #include <fstream>
 #include <sys/types.h>
 #include <experimental/filesystem>
-#include "Physics.h"
+#include "Physics/Physics.h"
+#include "InputBox.h"
 using namespace std;
 
 SystemClass::SystemClass()
@@ -48,8 +49,11 @@ bool SystemClass::Initialize()
 	int screenWidth, screenHeight;
 	bool result;
 
-	screenWidth = 0;
-	screenHeight = 0;
+
+	screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	//screenWidth = 0;
+	//screenHeight = 0;
 
 	CreateProjectFiles();
 
@@ -584,13 +588,13 @@ bool SystemClass::Frame()
 		VMaterialMaster->UpdateLinks();
 		
 		
-		if (mouseY < ScreenResY - 100 && GetSelectedWindow()==0)
+		/*if (mouseY < ScreenResY - 100 && GetSelectedWindow()==0)
 		{
 			
 			AddObjectToWorld();
-			ClearDrag();
+			//ClearDrag();
 			
-		}
+		}*/
 		
 	}
 	else
@@ -1411,12 +1415,19 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		// Check if a key has been pressed on the keyboard.
 	case WM_KEYDOWN:
 	{
-		
+		if (VWidgetManager->ActiveWidget != 0)
+		{
+			if (dynamic_cast<InputBox*>(VWidgetManager->ActiveWidget))
+			{
+				throw;
+
+			}
+		}
 		// If a key is pressed send it to the input object so it can record that state.
 		VInput->KeyDown((unsigned int)wparam);
 		switch(wparam)
 		{
-		
+			
 		case 46:  //Delete
 		{
 			VWidgetManager->ActiveWidget = 0;
@@ -2236,6 +2247,9 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	}
 	else
 	{
+		//screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		//screenHeight = GetSystemMetrics(SM_CYSCREEN)-(GetWindowsTaskBar().bottom - GetWindowsTaskBar().top);
+		
 		// If windowed then set it to 800x600 resolution.
 		screenWidth = 800;
 		screenHeight = 600;

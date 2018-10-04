@@ -228,7 +228,7 @@
     <ClInclude Include="RigidBodyComponent.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Physics.h">
+    <ClInclude Include="InputBox.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -398,11 +398,11 @@
     <ClCompile Include="Light.cpp">
       <Filter>Pliki źródłowe\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Pliki źródłowe\System</Filter>
-    </ClCompile>
     <ClCompile Include="RigidBodyComponent.cpp">
       <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="InputBox.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

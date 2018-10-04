@@ -2,8 +2,8 @@
 
 #pragma warning(disable : 4067)
 #include "Object.h"
-#define DIRECTX = true;
 
+#define DIRECTX = true
 
 #ifdef DIRECTX;
 #include <directxmath.h>

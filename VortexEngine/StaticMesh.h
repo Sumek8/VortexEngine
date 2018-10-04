@@ -23,16 +23,16 @@ public:
 
 public:
 		
-		int GetPolycount();
-		void SetModel(Model* srcModel);
-		void Shutdown();
-		Model* GetModel();
-		void CalculateSphereBounds();
-		float GetSphereBoundsRadius();
-		string GetName();
+		int     GetPolycount();
+		void    SetModel(Model* srcModel);
+		void    Shutdown();
+		Model*  GetModel();
+		void    CalculateSphereBounds();
+		float   GetSphereBoundsRadius();
+		string  GetName();
 		
 private:
-		string	Name;
+		string				Name;
 		int					polygonCount;
 		int					vertexCount;
 		int					edgeCount;
@@ -40,5 +40,6 @@ private:
 		Model*				VModel;
 		vector<Material*>	Materials;
 		float				BoundSphereRadius;
-	
+		vector<Model*>		LODModels;
+		vector<float>			LODRanges;
 };

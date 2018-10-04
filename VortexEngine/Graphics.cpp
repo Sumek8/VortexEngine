@@ -16,7 +16,7 @@ Graphics::Graphics()
 	VDepthShader = 0;
 	BaseColorMap = 0;
 
-	bApplyPostProcess = true;
+	bApplyPostProcess = false;
 
 	DrawCallCount = 0;
 	DrawInterface = true;
@@ -261,6 +261,8 @@ void Graphics::UpdatePolycount()
 	int Polycount = VResourceManager->GetWorld(0)->StaticMeshPolyCount;
 		if (Polycount>0)
 		VWidgetManager->GetWidgetContainer(SystemClass::GetSystem()->GetSelectedWindow())->GetViewportList()[0]->UpdatePolycount(Polycount);
+		else
+			VWidgetManager->GetWidgetContainer(SystemClass::GetSystem()->GetSelectedWindow())->GetViewportList()[0]->UpdatePolycount(0);
 	
 }
 void Graphics::SetWidgetManager(WidgetManager* srcWidgetManager)
@@ -391,7 +393,7 @@ bool Graphics::Render()
 
 								DrawCallCount++;
 								RenderBuffers(VDirect3D->GetDeviceContext(), StaticActor->Mesh->GetModel()->Chunks[j]->VVertexBuffer, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexBuffer);
-								result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexCount, VDirectionalLight->GetRotation(), DiffuseColor, BaseColorMap, NormalMap, VDirect3D->pShadowMapSRView, CubeMap, VCamera->GetPosition());
+								result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexCount,BaseColorMap, NormalMap, VDirect3D->pShadowMapSRView, CubeMap);
 
 							}
 						}
@@ -399,8 +401,7 @@ bool Graphics::Render()
 
 				}
 
-				
-				
+
 				if (bRenderWireframe)
 					VDirect3D->SetWireframeMode(false);
 
@@ -410,7 +411,7 @@ bool Graphics::Render()
 				VCamera->GetViewMatrix(viewMatrix);
 				//projectionMatrix = XMMatrixInverse(nullptr,projectionMatrix);
 				//viewMatrix = XMMatrixInverse(nullptr, viewMatrix);
-				result = VShaderClass->RenderLightPass(VDirect3D->GetDeviceContext(),VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,VDirectionalLight->GetRotation(), DiffuseColor, VCamera->GetPosition());
+				result = VShaderClass->RenderDeferredLightPass(VDirect3D->GetDeviceContext(),VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,VDirectionalLight->GetRotation(), DiffuseColor, VCamera->GetPosition());
 			
 			if (!result)
 				{
@@ -479,7 +480,7 @@ bool Graphics::Render()
 					
 					DrawCallCount++;
 					RenderBuffers(VDirect3D->GetDeviceContext(), VGizmo->Chunks[0]->VVertexBuffer, VGizmo->Chunks[0]->VIndexBuffer);
-					result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,VGizmo->Chunks[0]->VIndexCount,VDirectionalLight->GetRotation(), DiffuseColor,GizmoMap,0,0,0, VCamera->GetPosition());
+					result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix,VGizmo->Chunks[0]->VIndexCount,GizmoMap,0,0,0);
 					VGizmo = 0;
 
 
@@ -496,7 +497,7 @@ bool Graphics::Render()
 			{
 				if (VWidgetManager->GetWidgetContainer(i)->GetViewportList().size() > 0)
 				{
-					UpdatePolycount();
+			
 					DrawCallCount++;
 					CreateViewportBuffer(i);
 					RenderWidgetBuffers(VDirect3D->GetDeviceContext(), WidgetVertexBuffer, WidgetIndexBuffer);
@@ -504,6 +505,8 @@ bool Graphics::Render()
 
 				}
 			}
+			UpdatePolycount();
+
 			if (DrawInterface)
 			{
 				////	RenderWidgets////////
@@ -1086,11 +1089,6 @@ bool Graphics::CreateTextBuffers(int WindowID)
 
 	FontType TextFont = Arial;
 
-	
-
-	//WindowWidth = 1366;
-	//WindowHeight = 768;
-		
 	float Scale = 1;
 	float FontX = float(TextFont.width);
 	float FontY = float(TextFont.height);

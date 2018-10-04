@@ -549,8 +549,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 ExitButton = new Button;
 		 ExitButton->SetColor(0.5f, 0.5f, 0.5f, 1);
 		 ExitButton->SetRelativeTransform(float(WindowSize.x - 25), 0.0f);
-		 ExitButton->SetSize(25, 25);
-		 
+		 ExitButton->SetSize(25, 25);		 
 		 ExitButton->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::Exit>(SystemClass::GetSystem());
 		 ExitButton->SetName(string("Exit"));
 

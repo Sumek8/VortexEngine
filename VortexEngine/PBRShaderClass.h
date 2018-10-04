@@ -36,21 +36,21 @@ private:
 		float padding;
 	};
 
-	struct SkeletonBuffer
+	struct SkeletonBufferType
 	{
-		 vector<XMMATRIX>TransformMatrices;
+		 XMMATRIX TransformMatrices[255];
 	};
 
 
 
 public:
-	bool Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightprojectionMatrix, XMMATRIX& lightViewMatrix,int indexCount,VRotation& lightDirection, VColor& diffuseColor, ID3D11ShaderResourceView* BaseColorMap, ID3D11ShaderResourceView* NormalMap, ID3D11ShaderResourceView* ShadowMap, ID3D11ShaderResourceView* CubeMap, VVector& CameraPosition);
+	bool Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix,int indexCount, ID3D11ShaderResourceView* BaseColorMap, ID3D11ShaderResourceView* NormalMap, ID3D11ShaderResourceView* ShadowMap, ID3D11ShaderResourceView* CubeMap);
 bool Initialize(ID3D11Device*, HWND);
 bool InitializePostProcessShader(ID3D11Device*);
 	void Shutdown();
-	bool RenderLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition);
-	bool RenderSkinnedLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition);
 
+	bool RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition);
+	
 	bool RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor);
 
 private:

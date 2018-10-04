@@ -12,7 +12,7 @@
 #include "Skeleton.h"
 #include <vector>
 #include "SystemClass.h"
-
+#include "Animation.h"
 
 
 FBXImportManager::FBXImportManager()
@@ -104,15 +104,7 @@ Model* FBXImportManager::InitializeFBXManager(const char* ModelPath)
 
 
 	Skeleton* VSkeleton = 0;
-
-	
-	
-
 	FbxTransform Transform;
-
-
-	
-	
 
 	FbxGConv->Triangulate(Scene, true, true);
 	
@@ -137,7 +129,8 @@ Model* FBXImportManager::InitializeFBXManager(const char* ModelPath)
 							
 							VSkeleton = CreateSkeleton(Node);
 
-							ImportAnimation();
+								ImportAnimation();
+
 							break;
 						}
 
@@ -181,61 +174,79 @@ Animation* FBXImportManager::ImportAnimation()
 	//int Posecount = Scene->GetPoseCount();
 
 	int AnimationStacksCount = Scene->GetSrcObjectCount<FbxAnimStack>();
-
-	if (AnimationStacksCount > 0)
-	{
-
-
-		for (size_t AnimationID = 0; AnimationID <AnimationStacksCount; AnimationID++)
+	int AnimatedNodeCount = Scene->GetNodeCount();
+	
+	
+		if (AnimationStacksCount > 0)
 		{
-			AnimStacks.push_back(Scene->GetSrcObject<FbxAnimStack>(int(AnimationID)));
-			AnimNames.push_back(Scene->GetSrcObject<FbxAnimStack>(int(AnimationID))->GetName());
-	
 
 
-	
-			int AnimLayersCount = AnimStacks[AnimationID]->GetMemberCount<FbxAnimLayer>();
-
-
-			FbxAnimLayer* AnimLayer = AnimStacks[AnimationID]->GetMember<FbxAnimLayer>(0);
-		
-
-			int CurveNodeCount = AnimLayer->GetMemberCount<FbxAnimCurveNode>();
-		
-			FbxAnimCurveNode* CurveNode = AnimLayer->GetMember<FbxAnimCurveNode>(0);
-		
-			int ChannelCount = CurveNode->GetChannelsCount();
-			for (int ChannelID = 0; ChannelID <ChannelCount; ChannelID++)
+			for (size_t AnimationID = 0; AnimationID < AnimationStacksCount; AnimationID++)
 			{
-
+				AnimStacks.push_back(Scene->GetSrcObject<FbxAnimStack>(int(AnimationID)));
 			
-			string ChannelName = CurveNode->GetChannelName(int(ChannelID));
-			string CurveName = CurveNode->GetName();
+				AnimNames.push_back(Scene->GetSrcObject<FbxAnimStack>(int(AnimationID))->GetName());
+				int AnimLayersCount = AnimStacks[AnimationID]->GetMemberCount<FbxAnimLayer>();
 
-			FbxAnimCurve* AnimCurve = CurveNode->GetCurve(ChannelID, 0);
-		
-			int KeyCount = AnimCurve->KeyGetCount();
-
-				for (int KeyID = 0; KeyID < KeyCount; KeyID++)
+				for (size_t i = 0; i < AnimatedNodeCount; i++)
 				{
-					FbxTime KeyTime = AnimCurve->KeyGetTime(KeyID);
-					FbxAnimCurveDef::EInterpolationType CurveInterp = AnimCurve->KeyGetInterpolation(KeyID);
+					FbxNode* AnimatedNode = Scene->GetNode(i);
 
+
+
+
+				
+
+
+				
+				FbxAnimLayer* AnimLayer = AnimStacks[AnimationID]->GetMember<FbxAnimLayer>(AnimationID);
+				
+
+				FbxTimeSpan TimeSpan;
+				
+				
+				string ChannelName = AnimatedNode->GetName();
+				
+				AnimatedNode->GetAnimationInterval(TimeSpan, AnimStacks[AnimationID],AnimationID);
+				FbxTime duration = TimeSpan.GetDuration();
+				FbxTime STime = duration.GetSecondCount();
+				FbxAnimCurve* AnimCurves[9];
+				AnimCurves[0] = AnimatedNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false);			
+				AnimCurves[1] = AnimatedNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false);
+				AnimCurves[2] = AnimatedNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false);
+				AnimCurves[3] = AnimatedNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false);
+				AnimCurves[4] = AnimatedNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false);
+				AnimCurves[5] = AnimatedNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false);
+				AnimCurves[6] = AnimatedNode->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, false);
+				AnimCurves[7] = AnimatedNode->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, false);
+				AnimCurves[8] = AnimatedNode->LclScaling.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, false);
+				
+				
+				if (AnimCurves[0] != NULL)
+				{
+					int AnimCurveKeyCount = AnimCurves[0]->KeyGetCount();
+					for (int KeyID = 0; KeyID < AnimCurveKeyCount; KeyID++)
+					{
+						float value = AnimCurves[0]->KeyGetValue(KeyID);
+						FbxTime KeyTime = AnimCurves[0]->KeyGetTime(KeyID);
+						FbxAnimCurveDef::EInterpolationType CurveInterp = AnimCurves[0]->KeyGetInterpolation(KeyID);
+
+					}
 				}
-			
+				
 
+			
+		
+			
 			}
 		}
 	}
-	//* AnimCurve = 
-	//	FbxAnimCurve* = Scene.get
-
-
 	AnimNames.clear();
 	AnimStacks.clear();
 
 	return 0;
 }
+
 
 Model* FBXImportManager::ImportModel(FbxMesh* ImportMesh,FbxNode* Geometry)
 {

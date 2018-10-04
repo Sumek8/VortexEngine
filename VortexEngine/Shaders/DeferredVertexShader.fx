@@ -6,14 +6,11 @@
 // GLOBALS //
 /////////////
 
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register (b0)
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
-	matrix lightProjectionMatrix;
-	matrix lightViewMatrix;
-	float3 CameraPosition;
 };
 
 
@@ -71,8 +68,6 @@ PixelInputType VertexShaderFunction(VertexInputType input)
 
 	
 	WorldPosition = mul(input.position,worldMatrix);
-	//output.viewDirection = CameraPosition.xyz - WorldPosition.xyz;
-	//output.viewDirection = normalize(output.viewDirection);
 	output.WorldPosition = WorldPosition;
 	
     return output;

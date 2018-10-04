@@ -3,7 +3,7 @@
 #define _SYSTEMCLASS_H_
 
 #define WIN32_LEAN_AND_MEAN
-#define DIRECTX = true;
+
 
 #include <windows.h>
 #include <vector>

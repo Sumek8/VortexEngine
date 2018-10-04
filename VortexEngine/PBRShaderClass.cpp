@@ -46,15 +46,15 @@ void PBRShaderClass::Shutdown()
 
 	return;
 }
-bool PBRShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightprojectionMatrix, XMMATRIX& lightViewMatrix,int indexCount, VRotation& lightDirection, VColor& diffuseColor, ID3D11ShaderResourceView* BaseColorMap, ID3D11ShaderResourceView* NormalMap, ID3D11ShaderResourceView* ShadowMap, ID3D11ShaderResourceView* CubeMap, VVector& CameraPosition)
+bool PBRShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix,int indexCount,ID3D11ShaderResourceView* BaseColorMap, ID3D11ShaderResourceView* NormalMap, ID3D11ShaderResourceView* ShadowMap, ID3D11ShaderResourceView* CubeMap)
 {
 
 
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixBufferType* dataPtr;
-	unsigned int bufferNumber;
-
+	MatrixBufferType*		 dataPtr;
+	unsigned int			 bufferNumber;
+	SkeletonBufferType*		     SkeletonBufferData;
 
 	//	Make sure to transpose matrices before sending them into the shader, this is a requirement for DirectX 11.
 
@@ -62,8 +62,7 @@ bool PBRShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	XMMATRIX TworldMatrix = XMMatrixTranspose(worldMatrix);
 	XMMATRIX TviewMatrix = XMMatrixTranspose(viewMatrix);
 	XMMATRIX TprojectionMatrix = XMMatrixTranspose(projectionMatrix);
-	XMMATRIX TlightprojectionMatrix = XMMatrixTranspose(lightprojectionMatrix);
-	XMMATRIX TlightViewMatrix = XMMatrixTranspose(lightViewMatrix);
+
 
 		hr = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hr))
@@ -81,19 +80,33 @@ bool PBRShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	dataPtr->world = TworldMatrix;
 	dataPtr->view = TviewMatrix;
 	dataPtr->projection = TprojectionMatrix;
-	dataPtr->lightprojection = TlightprojectionMatrix;
-	dataPtr->lightView = TlightViewMatrix;
-	dataPtr->CameraPosition = CameraPosition;
 
 
 
 	deviceContext->Unmap(m_matrixBuffer, 0);
+
+	//SkinnedShader
+	
+	deviceContext->Map(SkeletonMatrixBuffer,0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	SkeletonBufferData = (SkeletonBufferType*)mappedResource.pData;
+	
+	
+	for (size_t i = 0; i < 255; i++)
+	{
+	
+		SkeletonBufferData->TransformMatrices[i] = TworldMatrix;
+	}
+	
+	
+	deviceContext->Unmap(SkeletonMatrixBuffer,0);
+	
 
 
 	bufferNumber = 0;
 
 
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	deviceContext->VSSetConstantBuffers(bufferNumber+1, 1, &SkeletonMatrixBuffer);
 
 	deviceContext->PSSetShaderResources(0, 1, &BaseColorMap);
 	deviceContext->PSSetShaderResources(1, 1, &NormalMap);
@@ -106,6 +119,27 @@ bool PBRShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	RenderShader(deviceContext, indexCount);
 
 	return true;
+}
+
+void PBRShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+{
+	// Set the vertex input layout.
+	deviceContext->IASetInputLayout(m_layout);
+
+
+				//SkinnedShader
+	//deviceContext->VSSetShader(DeferredSkinnedVertexShader, NULL, 0);
+
+	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
+
+	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+
+	deviceContext->DrawIndexed(indexCount, 0, 0);
+
+	//deviceContext->DrawIndexedInstanced(indexCount,2000,0,0,0);
+
+
+	return;
 }
 
 bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
@@ -121,7 +155,7 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	//Shader Input Types
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
 	unsigned int numElements;
-	D3D11_BUFFER_DESC matrixBufferDesc,cbDesc;
+	D3D11_BUFFER_DESC matrixBufferDesc,cbDesc,SkeletonBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 
 	ConstantBufferType  ConstantBuffer;
@@ -362,6 +396,16 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 
 	
 
+
+	SkeletonBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	SkeletonBufferDesc.ByteWidth = sizeof(SkeletonBufferType);
+	SkeletonBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	SkeletonBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	SkeletonBufferDesc.MiscFlags = 0;
+	SkeletonBufferDesc.StructureByteStride = 0;
+
+
+
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -404,6 +448,9 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 
 	result = device->CreateBuffer(&cbDesc, &InitData,&m_constantBuffer);
 
+	//CreateSkeletonBuffer
+	result = device->CreateBuffer(&SkeletonBufferDesc,NULL, &SkeletonMatrixBuffer);
+
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
@@ -412,6 +459,8 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	}
 
 	return true;
+
+	
 }
 
 bool PBRShaderClass::InitializePostProcessShader(ID3D11Device* device)
@@ -514,6 +563,12 @@ void PBRShaderClass::ShutdownShader()
 		m_constantBuffer->Release();
 		m_constantBuffer = 0;
 	}
+	if (SkeletonMatrixBuffer)
+	{
+		SkeletonMatrixBuffer->Release();
+		SkeletonMatrixBuffer = 0;
+	}
+	
 
 	if (DeferredSkinnedVertexShader)
 	{
@@ -564,118 +619,6 @@ void PBRShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwn
 
 
 
-bool PBRShaderClass::RenderSkinnedLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix, VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition)
-{
-
-	HRESULT hr;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixBufferType*		 dataPtr;
-	ConstantBufferType*		 dataPtr2;
-	SkeletonBuffer*		 SkeletonBufferData;
-	unsigned int			 bufferNumber;
-
-	hr = deviceContext->Map(m_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hr))
-	{
-
-		return false;
-	}
-
-	
-
-	dataPtr2 = (ConstantBufferType*)mappedResource.pData;
-
-	dataPtr2->DiffuseColor = diffuseColor;
-	dataPtr2->LightDirection = RotationToVector(lightDirection);
-	dataPtr2->padding = 0.0f;
-	deviceContext->Unmap(m_constantBuffer, 0);
-
-	// Transpose the matrices to prepare them for the shader.
-	XMMATRIX TworldMatrix = XMMatrixTranspose(worldMatrix);
-	XMMATRIX TviewMatrix = XMMatrixTranspose(viewMatrix);
-	XMMATRIX TprojectionMatrix = XMMatrixTranspose(projectionMatrix);
-	XMMATRIX TlightprojectionMatrix = XMMatrixTranspose(lightProjectionMatrix);
-	XMMATRIX TlightViewMatrix = XMMatrixTranspose(lightViewMatrix);
-	XMFLOAT3 CameraPos = XMFLOAT3(CameraPosition.x, CameraPosition.y, CameraPosition.z);
-
-	hr = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	// Get a pointer to the data in the constant buffer.
-	dataPtr = (MatrixBufferType*)mappedResource.pData;
-
-
-
-	// Copy the matrices into the constant buffer.
-	dataPtr->world = TworldMatrix;
-	dataPtr->view = TviewMatrix;
-	dataPtr->projection = TprojectionMatrix;
-	dataPtr->lightprojection = TlightprojectionMatrix;
-	dataPtr->lightView = TlightViewMatrix;
-	dataPtr->CameraPosition = CameraPosition;
-
-	deviceContext->Unmap(m_matrixBuffer, 0);
-
-
-	deviceContext->Map(SkeletonMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	SkeletonBufferData = (SkeletonBuffer*)mappedResource.pData;
-	
-	vector<XMMATRIX>BonesMatrices;
-	for (size_t i = 0; i < 22; i++)
-	{
-		BonesMatrices.push_back(TworldMatrix);
-	}
-
-	SkeletonBufferData->TransformMatrices = BonesMatrices;
-	BonesMatrices.clear();
-	
-
-	deviceContext->Unmap(SkeletonMatrixBuffer, 0);
-
-	bufferNumber = 0;
-
-
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-
-	deviceContext->PSSetShaderResources(0, 4,GBufferPointer);
-	deviceContext->PSSetShaderResources(4, 1, &ShadowMap);
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-	deviceContext->VSSetShader(DeferredSkinnedVertexShader, NULL, 0);
-	deviceContext->PSSetShader(DeferredPixelShader, NULL, 0);
-
-	deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
-
-	deviceContext->Draw(4, 0);
-
-	return true;
-
-}
-
-void PBRShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
-{
-	// Set the vertex input layout.
-	deviceContext->IASetInputLayout(m_layout);
-
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
-
-	// Render the triangle.
-	
-	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	//deviceContext->DrawIndexedInstanced(indexCount,2000,0,0,0);
-	
-
-	return;
-}
-
 
 bool PBRShaderClass::RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor)
 {
@@ -694,7 +637,7 @@ bool PBRShaderClass::RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11
 }
 
 
-bool PBRShaderClass::RenderLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap,XMMATRIX& worldMatrix,XMMATRIX& viewMatrix,XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix,XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor,VVector& CameraPosition)
+bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap,XMMATRIX& worldMatrix,XMMATRIX& viewMatrix,XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix,XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor,VVector& CameraPosition)
 {
 
 	HRESULT hr;

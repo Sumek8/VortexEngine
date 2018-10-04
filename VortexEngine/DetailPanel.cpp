@@ -2,8 +2,8 @@
 #include "DetailPanel.h"
 #include "Text.h"
 #include "ListBox.h"
-
-
+#include "InputBox.h"
+#include "Composer.h"
 
 
 
@@ -11,13 +11,18 @@ DetailPanel::DetailPanel()
 {
 
 	Size.x = 120;
-	
+	Size.y = 600;
 	SetName("Details");
 
+	/*Composer* WidgetComposer = new Composer;
+	WidgetComposer->SetIsHorizontal(false);
+	AddChildWidget(WidgetComposer);
+	*/
 	ListBox* List = new ListBox;
 	List->SetSize(Size.x,Size.y);
 	AddChildWidget(List);
 
+	
 		Widget* TransformBox;
 		TransformBox = new Widget;
 		TransformBox->SetName("TransformBox");
@@ -55,24 +60,26 @@ DetailPanel::DetailPanel()
 			ScaleText->SetText("Scale");
 			ScaleBox->AddChildWidget(ScaleText);
 
-				/*Text* ScaleValueX = new Text;
+				InputBox* ScaleValueX = new InputBox;
 				ScaleValueX->SetSize(Size.x, 10);
 				ScaleValueX->SetRelativeTransform(70.0f,0);
 				ScaleValueX->SetText("0");
+				ScaleValueX->SetName("X");
 				ScaleBox->AddChildWidget(ScaleValueX);
 
-				Text* ScaleValueY = new Text;
+				InputBox* ScaleValueY = new InputBox;
 				ScaleValueY->SetSize(Size.x, 10);
 				ScaleValueY->SetRelativeTransform(80.0f, 0);
 				ScaleValueY->SetText("0");
 				ScaleBox->AddChildWidget(ScaleValueY);
 
-				Text* ScaleValueZ = new Text;
+				InputBox* ScaleValueZ = new InputBox;
 				ScaleValueZ->SetSize(Size.x, 10);
 				ScaleValueZ->SetRelativeTransform(90.0f, 0);
 				ScaleValueZ->SetText("0");
 				ScaleBox->AddChildWidget(ScaleValueZ);
-				*/
+				
+			//	WidgetComposer->UpdateChildTransform();
 
 
 }

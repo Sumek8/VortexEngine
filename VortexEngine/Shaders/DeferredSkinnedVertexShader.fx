@@ -6,19 +6,16 @@
 // GLOBALS //
 /////////////
 
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register (b0)
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
-	matrix lightProjectionMatrix;
-	matrix lightViewMatrix;
-	float3 CameraPosition;
 };
 
-cbuffer BoneMatrices
+cbuffer BoneMatrices : register (b1)
 {
-	float3x4 Matrices[255];
+	float4x4 BonesMatrices[255];
 }
 
 //////////////
@@ -31,8 +28,8 @@ struct VertexInputType
 	float2 uv : TEXCOORD;
 	float3 tangent : TANGENT;
 	float3 binormal : BINORMAL;
-	int  BoneIndices[4] : BLENDINDICES;
-	float BoneInfluences[4] : BLENDWEIGHT;
+	int    BoneIndices[4] : BLENDINDICES0;
+	float  BoneInfluences[4] : BLENDWEIGHT0;
 };
 
 struct PixelInputType
@@ -49,6 +46,7 @@ struct PixelInputType
 PixelInputType VertexShaderFunction(VertexInputType input)
 {
 	float3 WorldPosition;
+	matrix BoneMatrix;
 
     PixelInputType output;
 	
@@ -61,6 +59,15 @@ PixelInputType VertexShaderFunction(VertexInputType input)
   	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 
+		
+		BoneMatrix = (
+		  BonesMatrices[input.BoneIndices[0]] * 1//input.BoneInfluences[0]
+		+ BonesMatrices[input.BoneIndices[1]] * input.BoneInfluences[1]
+		+ BonesMatrices[input.BoneIndices[2]] * input.BoneInfluences[2]
+		+ BonesMatrices[input.BoneIndices[3]] * input.BoneInfluences[3]
+			);
+	output.position = mul(output.position, BoneMatrix);
+	
 	//output.position = input.position;
     output.uv = input.uv;
 
@@ -76,8 +83,6 @@ PixelInputType VertexShaderFunction(VertexInputType input)
 
 	
 	WorldPosition = mul(input.position,worldMatrix);
-	//output.viewDirection = CameraPosition.xyz - WorldPosition.xyz;
-	//output.viewDirection = normalize(output.viewDirection);
 	output.WorldPosition = WorldPosition;
     return output;
 }

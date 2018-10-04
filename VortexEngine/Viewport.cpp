@@ -39,7 +39,7 @@ void Viewport::ShowDebugWindow()
 	Text* FPSCounterWidget;
 	FPSCounterWidget = new Text;
 FPSCounterWidget->SetRelativeTransform(5, 5);
-FPSCounterWidget->SetSize(120, 12);
+FPSCounterWidget->SetSize(180, 14);
 FPSCounterWidget->SetText("FPS:");
 AddChildWidget(FPSCounterWidget);
 FPSCounter = FPSCounterWidget;
@@ -48,7 +48,7 @@ FPSCounter = FPSCounterWidget;
 Text* PolyCounterWidget;
 PolyCounterWidget = new Text;
 PolyCounterWidget->SetRelativeTransform(5, 20);
-PolyCounterWidget->SetSize(120, 12);
+PolyCounterWidget->SetSize(180, 14);
 PolyCounterWidget->SetText("Polycount:");
 AddChildWidget(PolyCounterWidget);
 PolyCounter = PolyCounterWidget;
@@ -57,38 +57,29 @@ PolyCounter = PolyCounterWidget;
 Text* DrawCallWidget;
 DrawCallWidget = new Text;
 DrawCallWidget->SetRelativeTransform(5, 35);
-DrawCallWidget->SetSize(120, 12);
-DrawCallWidget->SetText("Polycount:");
+DrawCallWidget->SetSize(180, 14);
+DrawCallWidget->SetText("DrawCallCount:");
 DrawCallCounter = DrawCallWidget;
 AddChildWidget(DrawCallCounter);
 }
 void Viewport::UpdateFPS(int FpsCount)
 {
 	
-	char Buffer[20];
-	int bufferSize;
-		sprintf_s(Buffer,"FPS: %d",FpsCount);
-	FPSCounter->SetText(Buffer);
+	string FPSCount = "FPS: " + to_string(FpsCount);
+	FPSCounter->SetText(FPSCount);
 
 
 }
 
 void Viewport::UpdateDrawCall(int DrawCallCount)
 {
-	char Buffer[20];
-	int bufferSize;
-	sprintf_s(Buffer, "DrawCalls: %d", DrawCallCount);
-	DrawCallCounter->SetText(Buffer);
-
-
+	string DrawCalls = "DrawCallCount: " + to_string(DrawCallCount);
+	DrawCallCounter->SetText(DrawCalls);
 }
 void Viewport::UpdatePolycount(int PolygonCount)
 {
-
-	char Buffer[20];
-	int bufferSize;
-	sprintf_s(Buffer, "Polycount: %d", PolygonCount);
-	PolyCounter->SetText(Buffer);
+	string PolyCount = "Polycount: " + to_string(PolygonCount);
+	PolyCounter->SetText(PolyCount);
 
 }
 
