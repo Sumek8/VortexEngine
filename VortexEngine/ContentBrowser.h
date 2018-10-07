@@ -5,6 +5,7 @@
 class ContentBrowser : public Widget
 {
 public:
+	void CreateListWidget();
 	ContentBrowser();
 	~ContentBrowser();
 	void AddItem(string AssetName);

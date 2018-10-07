@@ -9,8 +9,6 @@ Composer::Composer()
 	bIsEnabled = true;
 	bIsVisible = false;
 	bIsHorizontal = false;
-
-	DistributionArray = { 0.5f,0.5f };
 }
 
 void Composer::SetIsHorizontal(bool bIsHorizontalSplit)
@@ -81,7 +79,7 @@ void Composer::UpdateChildren()
 	
 }
 
-/////Calculate distribution to 0-1 value
+/////Clamp distribution to 0-1 value
 void Composer::NormalizeDistribution()
 {
 	float TotalValue;
@@ -135,9 +133,10 @@ void Composer::CreatePartitionWidget()
 	int WidgetCount = GetChildCount();
 
 	float WidgetSize = 6;
-
+	
+	
 		Button* PartitionWidget;
-		PartitionWidget = new Button;
+		PartitionWidget = CreateWidget<Button>();
 		PartitionWidget->SetName("Separator");
 		PartitionWidget->SetColor(0.4, 0.4, 0.4, 1);
 		PartitionWidget->SetMouseOverEndColor(0.4, 0.4, 0.4, 1);
@@ -245,14 +244,28 @@ void Composer::AddSeparator(Widget* ChildWidget)
 void Composer::AddChildWidget(Widget* Child)
 {
 
+	int ChildCount = ChildWidgets.size();
+	int SeparatorCount = (ChildCount-1)/2;
+	int DistributionSize = ChildCount + 1 - SeparatorCount;
+	if (ChildCount > 0)
+	{
+
+		DistributionArray.clear();
+		for (size_t i = 0; i < DistributionSize; i++)
+		{
+			DistributionArray.push_back(float(1 / (float(DistributionSize))));
+		}
 
 
-	if (GetChildCount() > 0)
 		CreatePartitionWidget();
+	}
+	else
+		DistributionArray.push_back(1.0f);
+	
 
 	Widget::AddChildWidget(Child);
 	
-
+	UpdateChildTransform();
 	
 
 }

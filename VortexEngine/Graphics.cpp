@@ -31,7 +31,7 @@ void Graphics::SetLightRotation(VRotation Rotation)
 {
 	if (VDirectionalLight)
 	VDirectionalLight->SetRotation(Rotation);
-	
+
 	return;
 }
 void Graphics::SetLightPosition(VVector Position)

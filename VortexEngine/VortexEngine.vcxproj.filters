@@ -234,6 +234,12 @@
     <ClInclude Include="WindowsCore.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="Canvas.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="DropDownList.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp">
@@ -409,6 +415,12 @@
     </ClCompile>
     <ClCompile Include="WindowsCore.cpp">
       <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Canvas.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="DropDownList.cpp">
+      <Filter>Pliki źródłowe\Widget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

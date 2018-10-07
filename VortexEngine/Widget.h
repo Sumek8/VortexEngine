@@ -104,6 +104,9 @@ public:
 	
 	string			 GetName();
 	string			 VWidgetName;
+
+	
+
 	bool			 GetIsDragXLocked();
 	bool			 GetIsDragYLocked();
 	void			 Destroy();
@@ -145,3 +148,10 @@ protected:
 	
 };
 
+template<class C>
+static C * CreateWidget()
+{
+	C* Widget = new C;
+
+	return Widget;
+}

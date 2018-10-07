@@ -1,4 +1,7 @@
+#pragma once
+
 #include "stdafx.h"
+#include "Widget.h"
 #include "WidgetManager.h"
 #include "WorldOutliner.h"
 #include "ResourceManager.h"
@@ -6,8 +9,11 @@
 #include "Viewport.h"
 #include "SystemClass.h"
 #include "Composer.h"
-#include "Panel.h"
 #include "DetailPanel.h"
+#include "DropDownList.h"
+
+
+
 WidgetManager::WidgetManager()
 {
 
@@ -32,6 +38,7 @@ void WidgetManager::Initialize()
 	CreateWidgetContainer("CoreWindow");
 	
 	CreateInterface();
+
 }
 
 
@@ -61,6 +68,24 @@ void WidgetContainer::SetWindowID(int ID)
 	return;
 
 }
+void WidgetManager::RemoveDropdownList()
+{
+	
+	return;
+
+	if (GetWidgetContainer(0)->GetWidgetRoot()->GetChildCount() > 1)
+	{
+		for (int i = 1;i<GetWidgetContainer(0)->GetWidgetRoot()->GetChildCount();i++)
+			GetWidgetContainer(0)->GetWidgetRoot()->RemoveChild(i);
+	}
+			SystemClass::GetSystem()->UpdateInterface();
+			
+		
+	
+	
+}
+
+
 
 void  WidgetManager::CreateGameViewport()
 {
@@ -68,25 +93,24 @@ void  WidgetManager::CreateGameViewport()
 
 	VVector2 WindowSize = GameViewport->GetWindowSize();
 
-	Composer* VComposer;
-	VComposer = new Composer;
+	
+	
+	Composer* VComposer = CreateWidget<Composer>();
 	VComposer->SetEnabled(false);
 	VComposer->SetIsHorizontal(false);
 	VComposer->SetSize(WindowSize.x, WindowSize.y);
 	VComposer->DistributionArray = { 0.05f,0.9f };
-	GameViewport->AddWidget(VComposer, "Root");
+	GameViewport->AddWidget(VComposer,"");
 
 
-	Widget* InfoPanelWidget;
-	InfoPanelWidget = new Widget;
+	Widget* InfoPanelWidget = CreateWidget<Widget>();
 	InfoPanelWidget->SetName(string("InfoPanel"));
 	InfoPanelWidget->SetColor(0.3f, 0.3f, 0.3f, 1);
 	InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
 	InfoPanelWidget->OnLeftMouseDoubleClickDelegate.Bind<SystemClass, &SystemClass::ResizeViewport>(SystemClass::GetSystem());
 	VComposer->AddChildWidget(InfoPanelWidget);
 
-	Button* ExitButton;
-	ExitButton = new Button;
+	Button* ExitButton = CreateWidget<Button>();
 	ExitButton->SetColor(0.8f, 0.8f, 0.8f, 1);
 	ExitButton->SetRelativeTransform(float(WindowSize.x - 25), 2.0f);
 	ExitButton->SetSize(25, 25);
@@ -96,21 +120,25 @@ void  WidgetManager::CreateGameViewport()
 	InfoPanelWidget->AddChildWidget(ExitButton);
 
 
-	Viewport* VViewport;
-	VViewport = new  Viewport;
+	Viewport* VViewport = CreateWidget<Viewport>();
 	VViewport->SetName("GameViewport");
 	VComposer->AddChildWidget(VViewport);
 
 	
 	///Container
 	GameViewport->CalculateContainer();
-	VComposer->UpdateChildTransform();
+	
 
 }
 
 void WidgetContainer::SetIsBeingDestroyed(bool Destroyed)
 {
 	bIsBeingDestroyed = Destroyed;
+}
+
+void WidgetContainer::AddRootNode()
+{
+	WidgetRootNode = CreateWidget<Widget>();
 }
 
 WidgetContainer* WidgetManager::CreateWidgetContainer(string SourceName)
@@ -123,6 +151,10 @@ WidgetContainer* WidgetManager::CreateWidgetContainer(string SourceName)
 	Container->SetWindowTransform(VVector2(0, 0));
 	Container->SetWindowID(int(WidgetContainers.size()));
 	WidgetContainers.push_back(Container);
+
+	
+	//Container->AddRootNode();
+
 	return Container;
 }
 
@@ -236,35 +268,43 @@ bool WidgetContainer::AddWidget(Widget* newWidget, string parentName = "")
 
 	bool hasParent = false;
 
-	for (size_t i = 0; i < WidgetList.size(); i++)
+
+	//CreateRootNode//
+	if (WidgetList.size() == 0)
 	{
-		if (WidgetList.at(i)->GetName() == parentName)
-		{
-			hasParent = true;
-			Widget* Parent = WidgetList.at(i);
-			newWidget->SetParentTransform(Parent->GetTransform().x, Parent->GetTransform().y);
-			newWidget->UpdateTransform();
-			Parent->AddChildWidget(newWidget);
-		
-			int ZOrder = 0;
-			ZOrder = Parent->GetZOrder() + 1;
-			newWidget->SetZOrder(ZOrder);
-
-		
-			break;
-		}
-
-
+		WidgetRootNode = newWidget;
+		newWidget->UpdateTransform();		
+		newWidget->SetName("RootNode");
+		return true;
 	}
+	if (parentName != "")
+	{
+		for (size_t i = 0; i < WidgetList.size(); i++)
+		{
+			if (WidgetList.at(i)->GetName() == parentName)
+			{
+				hasParent = true;
+				Widget* Parent = WidgetList.at(i);
+				newWidget->SetParentTransform(Parent->GetTransform().x, Parent->GetTransform().y);
+				newWidget->UpdateTransform();
+				Parent->AddChildWidget(newWidget);
+
+				int ZOrder = 0;
+				ZOrder = Parent->GetZOrder() + 1;
+				newWidget->SetZOrder(ZOrder);
 
 
+				break;
+			}
+
+
+		}
+	}
 	if (!hasParent)
 	{
 		
+		WidgetRootNode->AddChildWidget(newWidget);
 		newWidget->UpdateTransform();
-		WidgetRootNode = newWidget;
-
-
 	}
 	
 
@@ -396,6 +436,7 @@ bool WidgetContainer::ClearContainer()
 	
 	
 	 WidgetContainers[ContainerID]->GetWidgetRoot()->GetChildWidget(1)->AddChildWidget(VViewport);
+	// WidgetContainers[ContainerID]->GetWidgetRoot()->GetChildWidget(0)->GetChildWidget(1)->AddChildWidget(VViewport);
 	 return;
 
 
@@ -430,9 +471,7 @@ bool WidgetContainer::ClearContainer()
  {
 	 GetWidgetContainer(ID)->GetWidgetRoot()->SetSize(GetWidgetContainer(ID)->GetWindowSize().x, GetWidgetContainer(ID)->GetWindowSize().y);
 	 GetWidgetContainer(ID)->GetWidgetRoot()->UpdateChildTransform();
-
-	 
-	 
+ 
  }
 
  void WidgetManager::UpdateContentBrowser(string AssetName)
@@ -449,18 +488,41 @@ bool WidgetContainer::ClearContainer()
  {
 	 WorldOutliner* VWorldOutliner;
 	 VWorldOutliner = new WorldOutliner;
-	 WidgetContainers[0]->AddWidget(VWorldOutliner, "Root");
+	 WidgetContainers[0]->AddWidget(VWorldOutliner);
 	 return;
+ }
+
+ void WidgetManager::CreateDropdownList()
+ {
+	
+	 DropDownList* WidgetList = CreateWidget<DropDownList>();
+	 GetWidgetContainer(0)->AddWidget(WidgetList);
+	 WidgetList->SetTransform(ActiveWidget->GetTransform().x,ActiveWidget->GetTransform().y + ActiveWidget->GetSize().y);
+
+	 WidgetList->AddElement("SaveProject");
+	 WidgetList->AddElement("OpenFile");
+	 WidgetList->AddElement("Preferences");
+
+	 
+	 GetWidgetContainer(0)->CalculateContainer();
+
  }
 
  void WidgetManager::CreateContentBrowser()
  {
 	 ContentBrowser* VContentBrowser;
-	 VContentBrowser = new  ContentBrowser;
-	 VContentBrowser->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
-
-     WidgetContainers[0]->AddWidget(VContentBrowser,"Root");
+	 VContentBrowser = CreateWidget<ContentBrowser>();
+ 
 	
+	 VContentBrowser->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
+	
+	 
+	 ActiveWidget->AddChildWidget(VContentBrowser);
+
+
+	 GetWidgetContainer(0)->CalculateContainer();
+
+
 	 return;
  }
 
@@ -523,25 +585,27 @@ Widget* WidgetContainer::GetWidgetRoot()
  void WidgetManager::CreateInterface()
  {
 	
-
-	
-
 	 VVector2 WindowTransform = GetWidgetContainer(0)->GetWindowTransform();
 	 VVector2 WindowSize = GetWidgetContainer(0)->GetWindowSize();
+
+
+	 Canvas* BaseCanvas = CreateWidget<Canvas>();
+	 GetWidgetContainer(0)->AddWidget(BaseCanvas);
+	
+
 
 	 Composer* VComposer;
 	 VComposer = new Composer;
 	 VComposer->SetIsHorizontal(false);
 	 VComposer->SetSize(WindowSize.x, WindowSize.y);
-	 VComposer->DistributionArray = { 0.05f,0.7f,0.2f };
-	 GetWidgetContainer(0)->AddWidget(VComposer, "Root");
-
+	 //GetWidgetContainer(0)->AddWidget(VComposer);
+	 BaseCanvas->AddChildWidget(VComposer);
 
 		 Widget* InfoPanelWidget;
 		 InfoPanelWidget = new Widget;
 		 InfoPanelWidget->SetName(string("InfoPanel"));
 		 InfoPanelWidget->SetColor(0.3f, 0.3f, 0.3f, 1);
-		 InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
+		// InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
 		 InfoPanelWidget->OnLeftMouseDoubleClickDelegate.Bind<SystemClass, &SystemClass::ResizeViewport>(SystemClass::GetSystem());
 		 VComposer->AddChildWidget(InfoPanelWidget);
 
@@ -576,6 +640,8 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 PanelButton->SetSize(40, 25);
 		 PanelButton->SetName(string("File"));
 		 InfoPanelWidget->AddChildWidget(PanelButton);
+		 PanelButton->OnLeftMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateDropdownList>(this);
+		 
 
 		 Text* PanelText;
 		 PanelText = new Text;
@@ -593,18 +659,21 @@ Widget* WidgetContainer::GetWidgetRoot()
 	
 	 Composer* VCenterComposer = new Composer;
 	 VCenterComposer->SetIsHorizontal(true);
-	 VCenterComposer->DistributionArray = { 0.2f,0.6f,0.2f};
 	 VComposer->AddChildWidget(VCenterComposer);
+
+	// Composer* VCenterComposer2 = new Composer;
+	// VCenterComposer2->SetIsHorizontal(true);
+	// VComposer->AddChildWidget(VCenterComposer2);
 
 	
 	 Panel*  VPanel = new Panel;
 	 VComposer->AddChildWidget(VPanel);
-
-
+	
 		 ContentBrowser* VContentBrowser;
 		 VContentBrowser = new  ContentBrowser;
 		 VPanel->AddChildWidget(VContentBrowser);
 
+		 
 		 /*
 		 DetailPanel* VBottomDetailPanel;
 		 VBottomDetailPanel = new DetailPanel;
@@ -620,14 +689,13 @@ Widget* WidgetContainer::GetWidgetRoot()
 		VLeftDetailPanel->SetColor(0.3f, 0.3f, 0.3f, 1);
 		VLeftPanel->AddChildWidget(VLeftDetailPanel);
 		
-	  	// Panel*  VPanel = new Panel;
-		 //VComposer->AddChildWidget(VPanel);
+	  	
 
 		 Viewport* VViewport;
 		 VViewport = new  Viewport;
 		 VCenterComposer->AddChildWidget(VViewport);
-
-
+		 //VComposer->AddChildWidget(VViewport);
+		 VViewport->SetColor(1, 1, 1, 1);
 		 //VisualDebugger
 
 
@@ -655,10 +723,10 @@ Widget* WidgetContainer::GetWidgetRoot()
 			 
 			
 
-			
+		
 	GetWidgetContainer(0)->CalculateContainer();
 	
-	  VComposer->UpdateChildTransform();
+
 
 	
 	
@@ -675,7 +743,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 	 VComposer->SetIsHorizontal(false);
 	 VComposer->SetSize(WindowSize.x, WindowSize.y);
 	 VComposer->DistributionArray = { 0.05f,0.7f};
-	 GetWidgetContainer(WindowID)->AddWidget(VComposer, "Root");
+	 GetWidgetContainer(WindowID)->AddWidget(VComposer);
 
 	
 
@@ -751,17 +819,17 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 PanelButton->SetName(string("File"));
 		 InfoPanelWidget->AddChildWidget(PanelButton);
 
-		 Text* PanelText;
-		 PanelText = new Text;
-		 PanelText->SetColor(1, 1, 1, 1);
-		 PanelText->SetRelativeTransform(5.0f, 3.0f);
-		 PanelText->SetSize(20, 15);
-		 PanelText->SetName(string("File"));
-		 PanelText->SetText("File");
-	 	 PanelButton->AddChildWidget(PanelText);
+			 Text* PanelText;
+			PanelText = new Text;
+			PanelText->SetColor(1, 1, 1, 1);
+			PanelText->SetRelativeTransform(5.0f, 3.0f);
+			PanelText->SetSize(20, 15);
+			 PanelText->SetName(string("File"));
+			PanelText->SetText("File");
+	 		PanelButton->AddChildWidget(PanelText);
 
 	 GetWidgetContainer(WindowID)->CalculateContainer();
-	 VComposer->UpdateChildTransform();
+	
  }
 
 
@@ -824,13 +892,27 @@ Widget* WidgetManager::GetClickedWidget(float inMouseX, float inMouseY,int Windo
 	{
 		Widget* ClickWidget;
 		ClickWidget = 0;
+
+
+		int RootChildCount = WidgetContainers[WindowID]->GetWidgetRoot()->GetChildCount();
+		if(RootChildCount > 0)
+			for (int i = RootChildCount-1; i > -1; i--)
+			{
+				ClickWidget = CheckIntersection(WidgetContainers[WindowID]->GetWidgetRoot()->GetChildWidget(i), int(mouseX), int(mouseY));
+				if (ClickWidget != 0)
+					return ClickWidget;
+			}
+
+
 		
+		/*
+
 		
-		
+
 			ClickWidget = CheckIntersection(WidgetContainers[WindowID]->GetWidgetRoot(),int(mouseX), int(mouseY));
 			if (ClickWidget != 0)
 				return ClickWidget;
-
+				*/
 		
 		return 0;
 	}
@@ -855,13 +937,9 @@ void WidgetManager::UpdateWidgets(ResourceManager* VManager)
 
 }
 
-
-
 void WidgetManager::Shutdown()
 {
 	
 	ClearContainersArray();
 
 }
-
-

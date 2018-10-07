@@ -1,7 +1,7 @@
 #pragma once
-#include "Widget.h"
 #include "Object.h"
-class Composer :public Widget
+#include "Canvas.h"
+class Composer :public Canvas
 {
 public:
 	Composer();

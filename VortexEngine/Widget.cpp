@@ -5,6 +5,16 @@
 
 
 
+/*
+template<class C>
+static C * CreateWidget()
+{
+	C* Widget = new C;
+
+	return Widget;
+}
+*/
+
 Widget::Widget()
 {
 	bIsClipping = false;
@@ -27,6 +37,8 @@ WidgetType Widget::GetType()
 	return Type;
 
 }
+
+
 void Widget::SetIsClipping(bool isClipping)
 {
 
@@ -367,7 +379,7 @@ void Widget::Shutdown()
 		ChildWidgets[i] = 0;
 	}
 	ChildWidgets.clear();
-	
+
 }
 
 void Widget::RemoveChild(int ID)
@@ -385,3 +397,4 @@ void Widget::Destroy()
 	WidgetManager::GetWidgetManager()->RemoveWidget(GetName());
 
 }
+

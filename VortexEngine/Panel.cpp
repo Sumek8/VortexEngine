@@ -90,8 +90,10 @@ void Panel::MoveTab()
 		{
 			RemoveChild(i);
 			RemoveChild(i - 1);
+			
 		}
 	}
+
 
 
 }

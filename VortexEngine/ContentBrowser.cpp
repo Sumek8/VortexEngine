@@ -5,6 +5,7 @@
 #include "SystemClass.h"
 #include "Composer.h"
 
+
 ContentBrowser::ContentBrowser()
 {
 	
@@ -34,7 +35,16 @@ ContentBrowser::ContentBrowser()
 
 	VBottomComposer->AddChildWidget(AssetViewer);
 	
+	OnRightMouseButtonDownDelegate.Bind<ContentBrowser, &ContentBrowser::CreateListWidget>(this);
 
+}
+
+
+void ContentBrowser::CreateListWidget()
+{
+	//Widget* ListWidget = CreateWidget<Widget>();
+
+	//AddChildWidget(ListWidget);
 }
 
 void ContentBrowser::SetSize(float SizeX, float SizeY)

@@ -105,6 +105,7 @@ bool SystemClass::Initialize()
 
 	CreateWidgetManager();
 
+	
 	VWidgetManager->GetWidgetContainer(0)->SetWindowSize(VVector2(ScreenWidth, ScreenHeight));
 	VWidgetManager->GetWidgetContainer(0)->SetWindowTransform(VVector2(0,0));
 	
@@ -132,10 +133,7 @@ bool SystemClass::Initialize()
 	LoadFilesFromDirectory(ProjectDirectory.c_str());
 
 	ResizeViewport();
-
-
-
-
+	
 
 	return true;
 }
@@ -1285,7 +1283,7 @@ void SystemClass::MouseIntersection()
 					}
 					else
 					{
-						Radius = 5;
+						Radius = 0.1;
 					    ObjectPivot = VResourceManager->GetWorld(0)->VActors[i]->GetPosition();
 					}
 
@@ -1707,6 +1705,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		ClickedWidget = (VWidgetManager->GetClickedWidget(mouseX, mouseY, GetSelectedWindow()));
 		if(ClickedWidget)
 		ClickedWidget->OnMouseButtonUp();
+	
+		
 
 
 		ReleaseInput();
@@ -1738,7 +1738,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 	case WM_LBUTTONDOWN:
 	{
-		
+		VWidgetManager->RemoveDropdownList();
 
 		POINT Point;
 		GetCursorPos(&Point);
@@ -1750,7 +1750,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		//HWND ActiveWindow  = GetActiveWindow();
 		//GetWindowRect(ActiveWindow);
 		
-		//SetActiveWindow(Vhwnd);
+		
 		HWND ActiveWindow = GetFocus();
 		SetForegroundWindow(ActiveWindow);
 		SetActiveWindow(ActiveWindow);
@@ -1791,16 +1791,22 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 				}
 				else
 				{
+				
+					
 					ClickedWidget->OnMouseButtonDown();
-
+					
+					VWidgetManager->ActiveWidget = 0;
+					ClickedWidget = 0;
 				}
 			}
 			else
 				MouseIntersection();
 		}
 		
+		
 
-
+	
+	
 		return 0;
 
 

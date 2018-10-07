@@ -11,6 +11,7 @@
 #include "Math.h"
 #include "Viewport.h"
 #include "DetailPanel.h"
+#include "Panel.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ struct ThemeColors
 {
 	VColor BaseColor;
 	VColor OutlineColor;
-
+	VColor OverColor;
 
 };
 
@@ -65,6 +66,8 @@ struct WidgetContainer
 	void		 SetName(string SourceName);
 	void		 SetWindowID(int ID);
 	void		 SetIsBeingDestroyed(bool Destroyed);
+
+	void AddRootNode();
 
 	vector<Line*>		LineList;
 	vector<Text*>		TextList;
@@ -111,8 +114,10 @@ public:
 	WidgetContainer* GetWidgetContainer(string name);
 	
 	int		 GetWindowCount();
+	void     RemoveDropdownList();
 	void     CreateGameViewport();
 	void	 CreateOutliner();
+	void	 CreateDropdownList();
 	void	 CreateContentBrowser();
 	void	 CreateMaterialEditor(int WindowID);
 
@@ -149,5 +154,6 @@ private:
 
 	
 };
+
 
 static WidgetManager* VWidgetManager = 0;
