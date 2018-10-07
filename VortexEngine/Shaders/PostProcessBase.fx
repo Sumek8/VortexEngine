@@ -27,6 +27,16 @@ float rgb2luma(float3 rgb) {
 	return sqrt(dot(rgb,float3(0.299, 0.587, 0.114)));
 }
 
+float3 ACESFilm(float3 x)
+{
+	float a = 2.51f;
+	float b = 0.03f;
+	float c = 2.43f;
+	float d = 0.59f;
+	float e = 0.14f;
+	return saturate((x*(a*x + b)) / (x*(c*x + d) + e));
+}
+
 float4 Desaturate(float4 Color,float Intensity)
 {
 	float4 DesaturatedColor = float4(0, 0, 0, 0);
@@ -81,10 +91,10 @@ float4 Color = float4(0, 0, 0, 0);
 	
 Color = SceneColor.Sample(Sampler, PIn.texCoord);
 
-//Color.rgb = ToneMap(Color.rgb);
-Color = Blur(Color, PIn.texCoord);
+//Color = Blur(Color, PIn.texCoord);
 //Color = Desaturate(Color,0);
 //Color = ChromaticAberration(Color, PIn.texCoord);
 //Color = rgb2luma(Color);
+//Color.xyz = ACESFilm(Color.xyz);
 return	Color;
 }

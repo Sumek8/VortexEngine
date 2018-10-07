@@ -9,6 +9,7 @@ Actor::Actor()
 		Rotation = VRotation(0,0,0);
 		Scale = VVector(1,1,1);
 		Position = VVector(0,0,0);
+		Velocity = VVector(0, 0, 0);
 }
 VVector Actor::GetVelocity()
 {
@@ -45,7 +46,10 @@ void	Actor::SetRotation(VRotation SourceRotation)
 	Rotation = SourceRotation;
 }
 
-
+bool Actor::GetIsVisible()
+{
+	return bIsVisible;
+}
 void Actor::SetPosition(float x, float y, float z)
 {
 	Position.x = x;

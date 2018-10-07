@@ -1,17 +1,12 @@
 #include "stdafx.h"
 #include  "DirectionalLight.h"
-#include <stdio.h>
-
-
-using namespace std;
 
 
 DirectionalLight::DirectionalLight()
 {
-	
-	LightColor = VColor(1.0f, 1.0f, 1.0f, 1.0f);
-	SetPosition(0,-5,5);
-	
+	Intensity = 1;
+	LightColor = VColor(1.0f,1.0f,1.0f, 1.0f);
+	SetPosition(0,0,0);
 }
 
 DirectionalLight::~DirectionalLight()
@@ -40,20 +35,17 @@ void DirectionalLight::GenerateViewMatrix()
 	yaw = (Rotation.Yaw) / 360 * XM_2PI + XM_PI;
 	roll = (Rotation.Roll) / 360 * XM_2PI + XM_PI;
 
-
+	
+	
 	XMFLOAT3 position;
-	position.x = 0;
-	position.y = -25;
-	position.z = 0;
+	position.x = Position.x;
+	position.y = Position.y;
+	position.z = Position.z;
 	
 	XMVECTOR targetVector;
 	targetVector = XMLoadFloat3(&position);
 
 
-	//char buffer[200];
-	//sprintf_s(buffer, size_t(100), " LOC  %f\n", Rotation.Pitch);
-	//OutputDebugStringA(buffer);
-	
 
 
 	rotationMatrix = XMMatrixRotationRollPitchYaw( pitch, yaw,roll);
@@ -66,7 +58,7 @@ void DirectionalLight::GenerateViewMatrix()
 
 
 	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
+	lookAt.y = 1.0f;
 	lookAt.z = 0.0f;
 
 	lookAtVector = XMLoadFloat3(&lookAt);

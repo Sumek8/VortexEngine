@@ -253,6 +253,7 @@
     <ClInclude Include="WICTextureLoader.h" />
     <ClInclude Include="Widget.h" />
     <ClInclude Include="WidgetManager.h" />
+    <ClInclude Include="WindowsCore.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="WorldOutliner.h" />
   </ItemGroup>
@@ -327,6 +328,7 @@
     <ClCompile Include="WICTextureLoader.cpp" />
     <ClCompile Include="Widget.cpp" />
     <ClCompile Include="WidgetManager.cpp" />
+    <ClCompile Include="WindowsCore.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="WorldOutliner.cpp" />
   </ItemGroup>
@@ -372,7 +374,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shaders\DeferredMergedOutput.fx">
+    <FxCompile Include="Shaders\DeferredBaseShading.fx">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VertexShaderFunction</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VertexShaderFunction</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VertexShaderFunction</EntryPointName>

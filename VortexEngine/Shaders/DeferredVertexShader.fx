@@ -34,12 +34,10 @@ struct PixelInputType
 	float3 normal : TEXCOORD1;
 	float3 tangent : TEXCOORD2;
 	float3 binormal : TEXCOORD3;
-	float3 WorldPosition : TEXCOORD4;
 };
 
 PixelInputType VertexShaderFunction(VertexInputType input)
 {
-	float3 WorldPosition;
 
     PixelInputType output;
 	
@@ -66,9 +64,6 @@ PixelInputType VertexShaderFunction(VertexInputType input)
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
 	output.normal = normalize(output.normal);
 
-	
-	WorldPosition = mul(input.position,worldMatrix);
-	output.WorldPosition = WorldPosition;
 	
     return output;
 }

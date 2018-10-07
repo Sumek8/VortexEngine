@@ -46,20 +46,18 @@ void SystemClass::HideActor(int ID)
 
 bool SystemClass::Initialize()
 {
-	int screenWidth, screenHeight;
+	int ScreenWidth, ScreenHeight;
 	bool result;
 
 
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
-	//screenWidth = 0;
-	//screenHeight = 0;
+	ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+	ScreenHeight = GetSystemMetrics(SM_CXSCREEN);
 
 	CreateProjectFiles();
 
 	if (ProjectDirectory != "")
 		
-	InitializeWindows(screenWidth, screenHeight);
+	InitializeWindows(ScreenWidth, ScreenHeight);
 	
 	VInput = new Input;
 	if (!VInput)
@@ -90,9 +88,10 @@ bool SystemClass::Initialize()
 		return false;
 	}
 	
+
 	VResourceManager->CreateWorld();
 
-	result = VGraphics->Initialize(screenWidth, screenHeight, Vhwnd);
+	result = VGraphics->Initialize(ScreenWidth, ScreenHeight, Vhwnd);
 	if (!result)
 	{
 		
@@ -101,12 +100,12 @@ bool SystemClass::Initialize()
 	
 	VGraphics->SetResourceManager(VResourceManager);
 
-	ScreenResX = screenWidth;
-	ScreenResY = screenHeight;
+	ScreenResX = ScreenWidth;
+	ScreenResY = ScreenHeight;
 
 	CreateWidgetManager();
 
-	VWidgetManager->GetWidgetContainer(0)->SetWindowSize(VVector2(screenWidth, screenHeight));
+	VWidgetManager->GetWidgetContainer(0)->SetWindowSize(VVector2(ScreenWidth, ScreenHeight));
 	VWidgetManager->GetWidgetContainer(0)->SetWindowTransform(VVector2(0,0));
 	
 	
@@ -121,7 +120,7 @@ bool SystemClass::Initialize()
 	VGraphics->VMaterialMaster = VMaterialMaster;
 	
 	
-	
+	CreateDirectionalLight();
 	//CreateViewport();
 	//OpenMaterialEditor();
 	
@@ -161,7 +160,7 @@ SystemClass* SystemClass::GetSystem()
 void SystemClass::OpenMaterialEditor()
 {
 	int WindowWidth = GetSystemMetrics(SM_CXSCREEN);
-	int WindowHeight = GetSystemMetrics(SM_CYSCREEN);
+	int WindowHeight = GetSystemMetrics(SM_CXSCREEN);
 	WindowHeight = 600;
 	WindowWidth = 800;
 	
@@ -169,13 +168,13 @@ void SystemClass::OpenMaterialEditor()
 
 
 	int posX = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2;
-	int posY = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight) / 2;
+	int posY = (GetSystemMetrics(SM_CXSCREEN) - WindowHeight) / 2;
 
 HWND VMaterialHwnd = CreateWindowEx(WS_EX_APPWINDOW, L"Vortex Engine", L"Material Master",
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 		posX, posY, WindowWidth, WindowHeight,NULL, NULL, Vhinstance, NULL);
 
-	// Bring the window up on the screen and set it as main focus.
+	// Bring the window up on the Screen and set it as main focus.
 	ShowWindow(VMaterialHwnd, SW_SHOW);
 	SetForegroundWindow(VMaterialHwnd);
 	SetFocus(VMaterialHwnd);
@@ -665,9 +664,9 @@ bool SystemClass::Frame()
 	float time;
 	time = clock();
 
-	degree = time / 400;
-
-	VGraphics->SetLightRotation(VRotation(0,0,degree));
+	degree = time / 100;
+	//VGraphics->SetLightRotation(VRotation(0, 0,90));
+	//VGraphics->SetLightRotation(VRotation(0,0,degree));
 
 	if(isAKey|| isDKey|| isSKey|| isWKey)
 	{ 
@@ -1058,13 +1057,13 @@ bool SystemClass::Frame()
 		GetCursorPos(&Point);
 		x = cursorPos.x - Point.x;
 		y = cursorPos.y - Point.y;
-		XMFLOAT3 rot = VGraphics->VCamera->GetRotation();
+		VRotation rot = VGraphics->VCamera->GetRotation();
 
 
-		rot.z = -x* Multiplier + rot.z;
-		rot.x = y* Multiplier + rot.x;
+		rot.Yaw = -x* Multiplier + rot.Yaw;
+		rot.Pitch = y* Multiplier + rot.Pitch;
 
-		VGraphics->VCamera->SetRotation(rot.x, 0, rot.z);
+		VGraphics->VCamera->SetRotation(rot.Pitch, 0, rot.Yaw);
 
 		cursorPos = Point;
 		//SetConsoleCursorPosition(output, pos);
@@ -1268,30 +1267,43 @@ void SystemClass::MouseIntersection()
 			
 			for (size_t i = 0; i < VResourceManager->GetWorld(0)->VActors.size(); i++)
 		{
-			if (VResourceManager->GetWorld(0)->VActors[i]->bIsVisible)
-			{
-				float Radius = dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->VActors[i])->Mesh->GetSphereBoundsRadius();
-				
-
-				VVector ObjectPivot = dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->VActors[i])->Mesh->GetModel()->GeometryCenter;
-
-				ObjectPivot += VResourceManager->GetWorld(0)->VActors[i]->GetPosition();
-
-				if (LineSphereTrace(UnprojectedVector,ViewPosition,Radius, ObjectPivot))
+				if (VResourceManager->GetWorld(0)->VActors[i]->bIsVisible)
 				{
-					if (isLeftCtrDown)
+					float Radius;
+					VVector ObjectPivot;
+
+					if (dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->VActors[i]) != nullptr)
 					{
-						VResourceManager->GetWorld(0)->SelectActor(VResourceManager->GetWorld(0)->VActors[i], false);
-						OutputDebugStringA("MultiSelect");
-						return;
+						Radius = dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->VActors[i])->Mesh->GetSphereBoundsRadius();
+					
+					
+		
+					ObjectPivot = dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->VActors[i])->Mesh->GetModel()->GeometryCenter;
+
+					ObjectPivot += VResourceManager->GetWorld(0)->VActors[i]->GetPosition();
+
 					}
 					else
 					{
-						VResourceManager->GetWorld(0)->SelectActor(VResourceManager->GetWorld(0)->VActors[i], true);
-						return;
+						Radius = 5;
+					    ObjectPivot = VResourceManager->GetWorld(0)->VActors[i]->GetPosition();
 					}
-				}
 
+					if (LineSphereTrace(UnprojectedVector, ViewPosition, Radius, ObjectPivot))
+					{
+						if (isLeftCtrDown)
+						{
+							VResourceManager->GetWorld(0)->SelectActor(VResourceManager->GetWorld(0)->VActors[i], false);
+							OutputDebugStringA("MultiSelect");
+							return;
+						}
+						else
+						{
+							VResourceManager->GetWorld(0)->SelectActor(VResourceManager->GetWorld(0)->VActors[i], true);
+							return;
+						}
+					}
+				
 				int BufferX = VGraphics->GetD3DClass()->GetBackBufferSize(0);
 				int BufferY = VGraphics->GetD3DClass()->GetBackBufferSize(1);
 				
@@ -1309,8 +1321,8 @@ void SystemClass::MouseIntersection()
 				LinearDepth = VGraphics->GetD3DClass()->GetPixelDepth(Point.x, Point.y);
 				LinearDepth += 256;
 				
-				//LinearDepth = (pow(1 * SCREEN_DEPTH + 1, LinearDepth) - 1) / 1;
-				//LinearDepth = (LinearDepth - SCREEN_NEAR) / (SCREEN_DEPTH - SCREEN_NEAR);
+				//LinearDepth = (pow(1 * Screen_DEPTH + 1, LinearDepth) - 1) / 1;
+				//LinearDepth = (LinearDepth - Screen_NEAR) / (Screen_DEPTH - Screen_NEAR);
 				float ProjectionA = SCREEN_DEPTH / (SCREEN_DEPTH - SCREEN_NEAR);
 				float ProjectionB = (-SCREEN_DEPTH * SCREEN_NEAR) / (SCREEN_DEPTH - SCREEN_NEAR);
 				LinearDepth = ProjectionB / (LinearDepth - ProjectionA);
@@ -1652,8 +1664,6 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 			VGraphics->VCamera->SetPosition(Pos.x + Vector.x, Pos.y + Vector.y, Pos.z + Vector.z);
 			
-	//	VGraphics->VCamera->SetArmLength(wheelInput);
-	//	VGraphics->VCamera->UpdateTransforms();
 		return 0;
 
 	}
@@ -1894,20 +1904,20 @@ void SystemClass::ReleaseInput()
 void SystemClass::CreateViewport()
 {
 	int WindowWidth = GetSystemMetrics(SM_CXSCREEN);
-	int WindowHeight = GetSystemMetrics(SM_CYSCREEN);
+	int WindowHeight = GetSystemMetrics(SM_CXSCREEN);
 	WindowHeight = 600;
 	WindowWidth = 800;
 
 
 
 	int posX = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2;
-	int posY = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight) / 2;
+	int posY = (GetSystemMetrics(SM_CXSCREEN) - WindowHeight) / 2;
 
 	HWND VGameViewport = CreateWindowEx(WS_EX_APPWINDOW, L"Vortex Engine", L"GameViewport",
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 		posX, posY, WindowWidth, WindowHeight, NULL, NULL, Vhinstance, NULL);
 
-	// Bring the window up on the screen and set it as main focus.
+	// Bring the window up on the Screen and set it as main focus.
 	ShowWindow(VGameViewport, SW_SHOW);
 	SetForegroundWindow(VGameViewport);
 	SetFocus(VGameViewport);
@@ -2144,11 +2154,16 @@ void SystemClass::UpdateContentBrowser(string AssetName)
 
 	return;
 }
-
+void SystemClass::CreateDirectionalLight()
+{
+	DirectionalLight* Light = SpawnActor<DirectionalLight>(VVector(0,0,0));
+	VGraphics->SetDirectionalLight(Light);
+	Light->SetName("DirectionalLight");
+};
 
 
 template<class C>
-void SystemClass::SpawnActor(VVector Location)
+C* SystemClass::SpawnActor(VVector Location)
 {
 
     int 	ActorIndex = 0;
@@ -2156,6 +2171,8 @@ void SystemClass::SpawnActor(VVector Location)
 	SpawnedActor->SetPosition(Location);
 	string DefaultActorName = "Actor";
 	string ActorName = DefaultActorName;
+
+	
 
 	
 	if (static_cast<PointLight*>(SpawnedActor))
@@ -2172,10 +2189,12 @@ void SystemClass::SpawnActor(VVector Location)
 
 		SpawnedActor->SetName(ActorName);
 
-	VResourceManager->GetWorld(0)->VActors.push_back(SpawnedActor);
-	
+	VResourceManager->AddActor(SpawnedActor);
+
 	UpdateOutliner();
-	return ;
+	if(SpawnedActor)
+	return static_cast<C*>(SpawnedActor);
+	else return 0;
 
 }
 
@@ -2189,7 +2208,7 @@ void SystemClass::GetResolution(int &horizontal,int& vertical)
 }
 
 
-void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
+void SystemClass::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
@@ -2223,23 +2242,23 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	
 
-	// Determine the resolution of the clients desktop screen.
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	// Determine the resolution of the clients desktop Screen.
+	ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+	ScreenHeight = GetSystemMetrics(SM_CXSCREEN);
 	
-	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
+	// Setup the Screen settings depending on whether it is running in full Screen or in windowed mode.
 	if (FULL_SCREEN)
 	{
 		//GetWindowsTaskBar().top
-		// If full screen set the screen to maximum size of the users desktop and 32bit.
+		// If full Screen set the Screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmPelsWidth = (unsigned long)ScreenWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)ScreenHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-		// Change the display settings to full screen.
+		// Change the display settings to full Screen.
 		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
 		// Set the position of the window to the top left corner.
@@ -2247,24 +2266,24 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	}
 	else
 	{
-		//screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		//screenHeight = GetSystemMetrics(SM_CYSCREEN)-(GetWindowsTaskBar().bottom - GetWindowsTaskBar().top);
+		//ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+		//ScreenHeight = GetSystemMetrics(SM_CXSCREEN)-(GetWindowsTaskBar().bottom - GetWindowsTaskBar().top);
 		
 		// If windowed then set it to 800x600 resolution.
-		screenWidth = 800;
-		screenHeight = 600;
+		ScreenWidth = 800;
+		ScreenHeight = 600;
 
-		// Place the window in the middle of the screen.
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		// Place the window in the middle of the Screen.
+		posX = (GetSystemMetrics(SM_CXSCREEN) - ScreenWidth) / 2;
+		posY = (GetSystemMetrics(SM_CXSCREEN) - ScreenHeight) / 2;
 	}
 
-	// Create the window with the screen settings and get the handle to it.
+	// Create the window with the Screen settings and get the handle to it.
 	Vhwnd = CreateWindowEx(WS_EX_APPWINDOW, VapplicationName, VapplicationName,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-		posX, posY, screenWidth, screenHeight, NULL, NULL, Vhinstance, NULL);
+		posX, posY, ScreenWidth, ScreenHeight, NULL, NULL, Vhinstance, NULL);
 	
-	// Bring the window up on the screen and set it as main focus.
+	// Bring the window up on the Screen and set it as main focus.
 	ShowWindow(Vhwnd, SW_SHOW);
 	SetForegroundWindow(Vhwnd);
 	SetFocus(Vhwnd);
@@ -2299,7 +2318,7 @@ void SystemClass::ShutdownWindows()
 	// Show the mouse cursor.
 	ShowCursor(true);
 
-	// Fix the display settings if leaving full screen mode.
+	// Fix the display settings if leaving full Screen mode.
 	if (FULL_SCREEN)
 	{
 		ChangeDisplaySettings(NULL, 0);

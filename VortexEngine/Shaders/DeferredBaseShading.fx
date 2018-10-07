@@ -6,32 +6,32 @@
 // GLOBALS //
 /////////////
 
-//#define ScreenWidth  1366
-//#define ScreenHeight 768
-
 #define ScreenWidth  1366
 #define ScreenHeight 768
 
 SamplerState SampleType : register(s0);
 
 
-cbuffer ConstantBufferType
-{
-
-	
-	float4 DiffuseColor;
-	float3 LightDirection;
-	float padding;
-};
-
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(b0)
 {
     matrix worldMatrix;
     matrix viewMatrix;
     matrix projectionMatrix;
+	matrix InverseProjectionMatrix;
 	matrix lightProjectionMatrix;
 	matrix lightViewMatrix;
-	float3 CameraPosition;
+	
+};
+
+cbuffer ConstantBufferType : register(b1)
+{
+
+
+	float4 LightColor;
+	float3 LightDirection;
+	float  LightPower;
+	float3 CameraDirection;	
+	float  Padding;
 };
 
 
@@ -50,7 +50,6 @@ Texture2D GBufferD : register(t3);
 
 //Texture2D ShadowMapSample : register(t4);
 
-//Texture2D MetalnessMapSample: register()
 
 
 
@@ -63,6 +62,16 @@ struct PixelInputType
 
 };
 
+float4 GammaToLinear(float4 GammaColor)
+{
+	return pow(GammaColor, 1 / 2.2);
+}
+
+float4 LinearToGamma(float4 LinearColor)
+{
+
+	return pow(LinearColor,2.2);
+}
 
 float chiGGX(float v)
 {
@@ -80,15 +89,6 @@ float GGX_Distribution(float3 n, float3 h, float Roughness)
 	return chiGGX(NoH)*a2 / (PI*d*d);
 }
 
-
-float GGX_PartialGeometryTerm(float3 v, float3 n, float3 h, float alpha)
-{
-	float VoH2 = saturate(dot(v, h));
-	float chi = chiGGX(VoH2 / saturate(dot(v, n)));
-	VoH2 = VoH2 * VoH2;
-	float tan2 = (1 - VoH2) / VoH2;
-	return (chi * 2) / (1 + sqrt(1 + alpha * alpha * tan2));
-}
 
 float DepthToLinear(float Depth)
 {
@@ -155,25 +155,32 @@ PixelInputType VertexShaderFunction(uint VertID : SV_VERTEXID)
 	return PIn;
 }
 
-
+float3 Fresnel_Schlick(float cosT, float3 F0)
+{
+	return F0 + (1 - F0) * pow(1 - cosT, 5);
+}
 
 float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 {
 	float3 Normal;
 	float4 Color = float4(0,0,0,1);
+
 	float4 BaseColor = float4(0,0,0,1);
-	float4 Position;
-	float3 lightDir = float3(1, 1, 1);
-	float  LightPower =	10;
-	float  LightIntensity;
-	float  roughness =	0.2;
-	float3 ViewDirection;
-	float4 WorldPosition = float4(0, 0, 0, 1);
-	float  D = 0;
-	float  Metalness = 0.9;
-	float  AmbientIntensity = 0.1;	
-	float  ior = 1.5;
+	float  Roughness = 0.5;
+	float  Metalness = 0;
 	float  SpecularPower = 1;
+	float4 Position;
+	float3 lightDir;
+
+	float  LightIntensity;
+	
+	float3 ViewDirection;
+	float3 WorldPosition = float3(0, 0, 0);
+	float  D = 0;
+	
+	float  AmbientIntensity = 0.5;	
+	float  ior = 1.5;
+	
 	float3 Specular = 0;
 	float  Depth;
 	float  ShadowDepth = 0;
@@ -196,15 +203,28 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	
 	BaseColor = GBufferA.Sample(SampleType, PIn.texCoord.xy);
 	Normal = GBufferB.Sample(SampleType, PIn.texCoord.xy).xyz;
-	WorldPosition = GBufferC.Sample(SampleType, PIn.texCoord.xy);
+	Metalness = GBufferC.Sample(SampleType, PIn.texCoord.xy).g;
+	Roughness = GBufferC.Sample(SampleType, PIn.texCoord.xy).r;
 	Depth = GBufferD.Sample(SampleType, PIn.texCoord.xy).r;
 	//ShadowDepth = ShadowMapSample.Sample(SampleType, PIn.texCoord.xy).r;
-	//Metalness = GBufferA.Sample(SampleType, PIn.texCoord.xy).r;
-	//roughness = GBufferA.Sample(SampleType, PIn.texCoord.xy).r;
-
-	ViewDirection = CameraPosition.xyz - WorldPosition.xyz;
-	ViewDirection = normalize(ViewDirection);
 	
+
+	/////WorldSpaceReconstruction//////
+	float x = PIn.texCoord.x * 2 - 1;
+	float y = (1 - PIn.texCoord.y) * 2 - 1;
+	float4 PixelPosition = float4(x, y, Depth, 1);
+	PixelPosition = mul(PixelPosition,InverseProjectionMatrix);
+	
+	WorldPosition = PixelPosition.xyz / PixelPosition.w;
+
+
+
+	//ViewDirection = CameraPosition.xyz - WorldPosition.xyz;
+	ViewDirection = CameraDirection;
+	//ViewDirection = normalize(ViewDirection);
+
+
+
 	/*
 	//PixelShadow.x = PixelShadow.x / 2 + 0.5;
 	//PixelShadow.y = PixelShadow.y / -2 + 0.5;
@@ -266,15 +286,15 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 			
 	LightIntensity = NoL*LightPower;
 
-		D = GGX_Distribution(Normal, H, roughness);
+		D = GGX_Distribution(Normal, H, Roughness);
 		
 		//Fresnel Schlick
-		float3 F = F0 + (1.0f - F0) * pow(1.0f - NoL, 5.0);
-		
+		//float3 F = F0 + (1.0f - F0) * pow(1.0f - NoL, 5.0);
+		float3 F = Fresnel_Schlick(saturate(dot(H, ViewDirection)), F0);
 	
 
 		//Schlick Geometry
-	float k = pow(roughness + 1, 2);
+	float k = pow(Roughness + 1, 2);
 	float 	GV = NoV / (NoV*(1 - k) + k);
 	float 	GL = NoL / (NoL*(1 - k) + k);
 	float	G = GV*GL;
@@ -286,10 +306,12 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	////////////Cook Torance
 		Specular = (D*F*G) / 4 * NoL*NoV;
 	
-			
-	Color = saturate(((1-Metalness)*BaseColor + float4(Specular.xyz, 1))*(LightIntensity) + AmbientIntensity);
-	
+	BaseColor = GammaToLinear(BaseColor);
+	Color = saturate(((1-Metalness)*BaseColor + float4(Specular.xyz, 1))*(LightIntensity)*LightColor + AmbientIntensity*BaseColor);
+	Color = LinearToGamma(Color);
 	//Color = Color*SSAO(10, PIn.texCoord, Normal);
-		
+	//Color = float4(G,1);
+//	Color = float4(Specular,1);
+	
 return	Color;
 }

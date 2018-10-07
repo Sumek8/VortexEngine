@@ -12,7 +12,13 @@ ResourceManager::~ResourceManager()
 
 }
 
-
+void ResourceManager::AddActor(Actor* NewActor)
+{
+	
+	//auto ActorPtr = make_shared<Actor>(NewActor);
+	//ActorPtr->
+	GetWorld(0)->VActors.push_back(NewActor);
+}
 
 ResourceType ResourceManager::GetTypeByName(string Name)
 {

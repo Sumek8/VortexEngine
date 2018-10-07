@@ -25,15 +25,18 @@ private:
 		XMMATRIX world;
 		XMMATRIX view;
 		XMMATRIX projection;
+		XMMATRIX InverseProjection;
 		XMMATRIX lightView;
 		XMMATRIX lightprojection;
-		VVector CameraPosition;
+		
 	};
 	struct ConstantBufferType
 	{
-		VColor DiffuseColor;
+		VColor  LightColor;
 		VVector LightDirection;
-		float padding;
+		float   LightPower;
+		VVector CameraDirection;		
+		float   Padding;
 	};
 
 	struct SkeletonBufferType
@@ -49,7 +52,7 @@ bool Initialize(ID3D11Device*, HWND);
 bool InitializePostProcessShader(ID3D11Device*);
 	void Shutdown();
 
-	bool RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition);
+	bool RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition,float LightIntensity);
 	
 	bool RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor);
 

@@ -231,6 +231,9 @@
     <ClInclude Include="InputBox.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="WindowsCore.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp">
@@ -404,6 +407,9 @@
     <ClCompile Include="InputBox.cpp">
       <Filter>Pliki źródłowe\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsCore.cpp">
+      <Filter>Pliki źródłowe\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VortexEngine.rc">
@@ -434,9 +440,6 @@
     <FxCompile Include="Shaders\DeferredVertexShader.fx">
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\DeferredMergedOutput.fx">
-      <Filter>Pliki źródłowe\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\WidgetShader.fx">
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
@@ -453,6 +456,9 @@
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\BillBoardShader.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DeferredBaseShading.fx">
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

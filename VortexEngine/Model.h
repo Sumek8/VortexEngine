@@ -23,11 +23,11 @@ using namespace DirectX;
 struct VertexStruct
 {
 
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
+	VVector position;
+	VVector normal;
 	XMFLOAT2 uv;
-	XMFLOAT3 tangent;
-	XMFLOAT3 binormal;
+	VVector tangent;
+	VVector binormal;
 };
 
 struct InstanceStruct

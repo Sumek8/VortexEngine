@@ -911,14 +911,22 @@ void D3DClass::SetGBufferRenderTarget()
 
 	float color[4];
 
-	
 	color[0] = 0;
 	color[1] = 0;
 	color[2] = 0;
 	color[3] = 0;
 
-	for (int i = 0; i<BufferCount; i++)
-		VDeviceContext->ClearRenderTargetView(GBufferRTView[i], color);
+	float NormalColor[4];
+
+	NormalColor[0] = 0.5f;
+	NormalColor[1] = 0.5f;
+	NormalColor[2] = 1;
+	NormalColor[3] = 1;
+
+	VDeviceContext->ClearRenderTargetView(GBufferRTView[0], color);
+	VDeviceContext->ClearRenderTargetView(GBufferRTView[1], NormalColor);
+	VDeviceContext->ClearRenderTargetView(GBufferRTView[2], color);
+	VDeviceContext->ClearRenderTargetView(GBufferRTView[3], color);
 
 	VDeviceContext->OMSetRenderTargets(BufferCount, GBufferRTView, m_depthStencilView);
 	VDeviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);

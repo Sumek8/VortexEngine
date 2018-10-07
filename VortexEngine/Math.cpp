@@ -21,19 +21,15 @@ VVector VVector::MultiplyFloat(VVector SrcVector,float srcFloat)
 return DestVector;
 }
 
+
 VVector RotationToVector(VRotation Rotation)
 {
 	VVector Vector;
-
-	Vector.x = cos(Rotation.Yaw)*cos(Rotation.Pitch);
-		Vector.y = sin(Rotation.Yaw)*cos(Rotation.Pitch);
-		Vector.z = sin(Rotation.Pitch);
-
-
 	
-	//Vector.x = Rotation.Pitch;
-	//Vector.y = Rotation.Roll;
-//	Vector.z = Rotation.Yaw;
+		Vector.x = cos(Rotation.Yaw/ 180 * PI)*cos(Rotation.Pitch / 180 * PI);
+		Vector.y = sin(Rotation.Yaw / 180 * PI)*cos(Rotation.Pitch / 180 * PI);
+		Vector.z = sin(Rotation.Pitch / 180 * PI);
+
 	Vector.Normalize();
 	return Vector;
 }
@@ -279,6 +275,14 @@ VRotation::VRotation(float SourcePitch, float SourceRoll, float SourceYaw)
 	Roll = SourceRoll;
 	Yaw = SourceYaw;
 
+}
+VRotation VRotation::operator + (VRotation Rotator)
+{
+	VRotation Rotation;
+	Rotation.Pitch += Rotator.Pitch;
+	Rotation.Roll = Rotator.Roll;
+	Rotation.Yaw = Rotator.Yaw;
+	return Rotation;
 }
 VRotation VRotation::operator / (float Value)
 {

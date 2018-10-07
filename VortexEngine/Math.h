@@ -4,8 +4,7 @@
 
 using namespace DirectX;
 
-
-const float PI = 3.141592471f;
+const double PI = 3.141592653589793238462;
 struct VVector2
 {
 	float x;
@@ -41,6 +40,7 @@ struct VRotation
 	float Yaw;
 
 	VRotation(float Pitch, float Roll, float Yaw);
+	VRotation operator+(VRotation Rotator);
 	VRotation();
 	VRotation operator / (float);
 };

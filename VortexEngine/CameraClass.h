@@ -16,7 +16,7 @@ public:
 
 	VVector GetForwardVector();
 
-	XMFLOAT3 GetRotation();
+	VRotation GetRotation();
 	VVector GetUpVector();
 	VVector GetLeftVector();
 	VVector GetRightVector();

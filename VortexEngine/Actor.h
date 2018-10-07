@@ -14,8 +14,8 @@ public:
 	VVector GetVelocity();
 	void UpdatePhysics();
 	~Actor();
+	bool		GetIsVisible();
 	void		SetPosition(float x, float y, float z);
-
 	void SetPosition(VVector Vector);
 	
 	void		SetScale(float x, float y, float z);
@@ -23,7 +23,7 @@ public:
 	void		SetRotation(VRotation Rotation);
 	VVector		GetPosition();
 	VVector		GetScale();
-	VRotation		GetRotation();
+	VRotation	GetRotation();
 	XMMATRIX	WorldMatrix;
 	void		CalculateMatrix();
 	

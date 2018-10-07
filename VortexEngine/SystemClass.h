@@ -18,7 +18,7 @@
 #include "World.h"
 #include "MaterialMaster.h"
 #include "Delegate.h"
-
+#include "WindowsCore.h"
 
 
 class SystemClass
@@ -65,9 +65,11 @@ private:
 	bool		ImportFileFromPath(const char* FilePath);
 	void		MouseIntersection();
 	void		UpdateContentBrowser(string AssetName);
+
+	void CreateDirectionalLight();
 	
 	template<class C>
-	void SpawnActor(VVector Location);
+	C*		SpawnActor(VVector Location);
 	
 	void		ClearDrag();
 	void		Quit();

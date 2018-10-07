@@ -217,7 +217,7 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	}
 
 	
-	result = D3DCompileFromFile(L"Shaders/DeferredMergedOutput.fx", NULL, NULL, "VertexShaderFunction", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+	result = D3DCompileFromFile(L"Shaders/DeferredBaseShading.fx", NULL, NULL, "VertexShaderFunction", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&DeferredVertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -226,18 +226,18 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 		if (errorMessage)
 		{
 			
-			OutputShaderErrorMessage(errorMessage, hwnd, L"Shaders/DeferredMergedOutput.fx");
+			OutputShaderErrorMessage(errorMessage, hwnd, L"Shaders/DeferredBaseShading.fx");
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(hwnd, L"Shaders/DeferredMergedOutput.fx", L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, L"Shaders/DeferredBaseShading.fx", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
 	}
 
-	result = D3DCompileFromFile(L"Shaders/DeferredMergedOutput.fx",NULL, NULL, "PixelShaderFunction", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+	result = D3DCompileFromFile(L"Shaders/DeferredBaseShading.fx",NULL, NULL, "PixelShaderFunction", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&DeferredPixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -245,12 +245,12 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage)
 		{
-			OutputShaderErrorMessage(errorMessage, hwnd, L"Shaders/DeferredMergedOutput.fx");
+			OutputShaderErrorMessage(errorMessage, hwnd, L"Shaders/DeferredBaseShading.fx");
 		}
 		// If there was nothing in the error message then it simply could not find the file itself.
 		else
 		{
-			MessageBox(hwnd, L"Shaders/DeferredMergedOutput.fx", L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, L"Shaders/DeferredBaseShading.fx", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -637,7 +637,7 @@ bool PBRShaderClass::RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11
 }
 
 
-bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap,XMMATRIX& worldMatrix,XMMATRIX& viewMatrix,XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix,XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor,VVector& CameraPosition)
+bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap,XMMATRIX& worldMatrix,XMMATRIX& viewMatrix,XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix,XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& LightColor,VVector& CameraDirection,float LightIntensity)
 {
 
 	HRESULT hr;
@@ -657,19 +657,20 @@ bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext,
 
 	dataPtr2 = (ConstantBufferType*)mappedResource.pData;
 
-	dataPtr2->DiffuseColor = diffuseColor;
+	dataPtr2->LightColor = LightColor;
 	dataPtr2->LightDirection = RotationToVector(lightDirection);
-	dataPtr2->padding = 0.0f;
+	dataPtr2->LightPower = LightIntensity;
+	dataPtr2->CameraDirection = CameraDirection;	
+	dataPtr2->Padding = 0;
 	deviceContext->Unmap(m_constantBuffer, 0);
 
 	// Transpose the matrices to prepare them for the shader.
 	XMMATRIX TworldMatrix = XMMatrixTranspose(worldMatrix);
 	XMMATRIX TviewMatrix = XMMatrixTranspose(viewMatrix);
 	XMMATRIX TprojectionMatrix = XMMatrixTranspose(projectionMatrix);
+	XMMATRIX TInverseProjectionMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr,projectionMatrix));
 	XMMATRIX TlightprojectionMatrix = XMMatrixTranspose(lightProjectionMatrix);
 	XMMATRIX TlightViewMatrix = XMMatrixTranspose(lightViewMatrix);
-	XMFLOAT3 CameraPos = XMFLOAT3(CameraPosition.x, CameraPosition.y, CameraPosition.z);
-
 	hr = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hr))
 	{
@@ -685,9 +686,10 @@ bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext,
 	dataPtr->world = TworldMatrix;
 	dataPtr->view = TviewMatrix;
 	dataPtr->projection = TprojectionMatrix;
+	dataPtr->InverseProjection = TInverseProjectionMatrix;
 	dataPtr->lightprojection = TlightprojectionMatrix;
 	dataPtr->lightView = TlightViewMatrix;
-	dataPtr->CameraPosition = CameraPosition;
+	
 
 
 
@@ -696,11 +698,9 @@ bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext,
 
 	bufferNumber = 0;
 
-
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-
 	deviceContext->PSSetShaderResources(0,4,GBufferPointer);
 	deviceContext->PSSetShaderResources(4, 1, &ShadowMap);
+
 	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -708,8 +708,10 @@ bool PBRShaderClass::RenderDeferredLightPass(ID3D11DeviceContext* deviceContext,
 	deviceContext->VSSetShader(DeferredVertexShader, NULL, 0);
 	deviceContext->PSSetShader(DeferredPixelShader, NULL, 0);
 
-	deviceContext->PSSetConstantBuffers(0, 1, &m_constantBuffer);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_matrixBuffer);
+	deviceContext->PSSetConstantBuffers(1, 1, &m_constantBuffer);
 	
+
 	deviceContext->Draw(4, 0);
 	
 	return true;

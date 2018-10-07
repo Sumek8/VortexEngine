@@ -31,15 +31,15 @@ void CameraClass::SetArmLength(float length)
 
 void CameraClass::UpdateTransforms()
 {
-	XMFLOAT3 rotation = GetRotation();
+	VRotation rotation = GetRotation();
 	float pitch, yaw, roll;
 
 	XMMATRIX rotationMatrix;
 	XMFLOAT3 position;
 
-	pitch = (rotation.x) / 360 * XM_2PI + XM_PI;
-	yaw = (rotation.y) / 360 * XM_2PI + XM_PI;
-	roll = (rotation.z) / 360 * XM_2PI + XM_PI;
+	pitch = (rotation.Pitch) / 360 * XM_2PI + XM_PI;
+	yaw = (rotation.Yaw) / 360 * XM_2PI + XM_PI;
+	roll = (rotation.Roll) / 360 * XM_2PI + XM_PI;
 
 
 
@@ -212,9 +212,9 @@ VVector CameraClass::GetForwardVector()
 		return OutputVector;
 }
 
-XMFLOAT3 CameraClass::GetRotation()
+VRotation CameraClass::GetRotation()
 {
-	return XMFLOAT3(m_rotationX, m_rotationY, m_rotationZ);
+	return VRotation(m_rotationX, m_rotationY, m_rotationZ);
 }
 void CameraClass::Render()
 {

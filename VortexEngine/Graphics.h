@@ -1,23 +1,17 @@
 #pragma once
 
-#define DIRECTX = true
-#define WINDOWS = true
+//#define DIRECTX = 1
+#define WINDOWS = 1
 
 
 #ifdef WINDOWS
 #include <windows.h>
-#endif // WINDOWS
+#endif  WINDOWS
 
 
 
 
 #include "Math.h"
-
-#ifdef DIRECTX
-#include <d3d11.h>
-#include "D3DClass.h"
-#endif 
-
 
 #include "DirectionalLight.h"
 #include "Cameraclass.h"
@@ -31,6 +25,16 @@
 #include "Font.h"
 #include "Text.h"
 #include "Viewport.h"
+
+
+#ifdef DIRECTX
+#include <d3d11.h>
+#include "D3DClass.h"
+#endif 
+
+
+
+
 /////////////
 // GLOBALS //
 /////////////
@@ -75,6 +79,7 @@ public:
 	void UpdateFPS();
 	void UpdateDrawCallCount();
 	void RenderBuffers(ID3D11DeviceContext* deviceContext,ID3D11Buffer* vertexBuffer, ID3D11Buffer* IndexBuffer);
+	void SetDirectionalLight(DirectionalLight * Light);
 	void RenderWidgetBuffers(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer);
 	void ToggleWireframe();
 

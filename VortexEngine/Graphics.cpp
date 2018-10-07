@@ -16,7 +16,7 @@ Graphics::Graphics()
 	VDepthShader = 0;
 	BaseColorMap = 0;
 
-	bApplyPostProcess = false;
+	bApplyPostProcess = true;
 
 	DrawCallCount = 0;
 	DrawInterface = true;
@@ -29,22 +29,22 @@ Graphics::~Graphics()
 }
 void Graphics::SetLightRotation(VRotation Rotation)
 {
-	
+	if (VDirectionalLight)
 	VDirectionalLight->SetRotation(Rotation);
 	
 	return;
 }
 void Graphics::SetLightPosition(VVector Position)
 {
+	if (VDirectionalLight)
 	VDirectionalLight->SetRotation(Position.x, Position.y, Position.z);
 
 	return;
 }
 void Graphics::GetLightRotation(VRotation outRotation)
 {
-	
+	if (VDirectionalLight)
 	outRotation = VDirectionalLight->GetRotation();
-
 
 	return;
 }
@@ -72,16 +72,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	
-	VDirectionalLight = new DirectionalLight;
-		if(!VDirectionalLight)
-		{
-			return false;
 		
-		}
-	
-		
-		VDirectionalLight->GenerateViewMatrix();
 	// Create the camera object.
 	VCamera = new CameraClass;
 	if (!VCamera)
@@ -309,20 +300,22 @@ bool Graphics::Render()
 
 	if (bRenderWireframe)
 		VDirect3D->SetWireframeMode(true);
-
-	VDirectionalLight->GetViewMatrix(lightViewMatrix);
-	VDirectionalLight->GetProjectionMatrix(lightProjectionMatrix);
-
+	if (VDirectionalLight)
+	{
+		VDirectionalLight->GetViewMatrix(lightViewMatrix);
+		VDirectionalLight->GetProjectionMatrix(lightProjectionMatrix);
+	}
 	//RenderDynamicShadows
 	if (ObjectCount == 0 )
 		VDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	else
 	{
-
-		VDirectionalLight->GetProjectionMatrix(lightProjectionMatrix);
-		VDirectionalLight->GenerateViewMatrix();
-
+		if (VDirectionalLight)
+		{
+			VDirectionalLight->GetProjectionMatrix(lightProjectionMatrix);
+			VDirectionalLight->GenerateViewMatrix();
+		}
 		if (!bRenderWireframe)
 		{
 			VDirect3D->RenderShadows();
@@ -373,8 +366,10 @@ bool Graphics::Render()
 				VCamera->GetViewMatrix(viewMatrix);
 
 				VDirect3D->GetProjectionMatrix(projectionMatrix, ViewportAspect);
-				VDirectionalLight->GetViewMatrix(lightViewMatrix);
-
+				if (VDirectionalLight)
+				{
+					VDirectionalLight->GetViewMatrix(lightViewMatrix);
+				}
 
 
 				for (size_t i = 0; i < ObjectCount; i++)
@@ -405,13 +400,27 @@ bool Graphics::Render()
 				if (bRenderWireframe)
 					VDirect3D->SetWireframeMode(false);
 
-				//RenderLightPass
+			 //Rotation Correction
+				VRotation CameraRot = VCamera->GetRotation();
+				CameraRot.Yaw -= 90;
+				
+				float     LightIntensity = 0;
+				VRotation LightDirection = VRotation(0, 0, 0);
+				VColor    LightColor = VColor(1, 1, 1, 1);
+					if (VDirectionalLight)
+					{
+						if (VDirectionalLight->GetIsVisible())
+						{
+							LightIntensity = VDirectionalLight->GetLightIntensity();
+							LightDirection = VDirectionalLight->GetRotation();
+							LightColor = VDirectionalLight->GetLightColor();
+						}
+					}
+				///////RenderLightPass/////////
 				VDirect3D->SetDeferredRenderTarget();
 				VDirect3D->GetProjectionMatrix(projectionMatrix, ViewportAspect);
 				VCamera->GetViewMatrix(viewMatrix);
-				//projectionMatrix = XMMatrixInverse(nullptr,projectionMatrix);
-				//viewMatrix = XMMatrixInverse(nullptr, viewMatrix);
-				result = VShaderClass->RenderDeferredLightPass(VDirect3D->GetDeviceContext(),VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,VDirectionalLight->GetRotation(), DiffuseColor, VCamera->GetPosition());
+				result = VShaderClass->RenderDeferredLightPass(VDirect3D->GetDeviceContext(),VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,LightDirection,LightColor,RotationToVector(CameraRot), LightIntensity);
 			
 			if (!result)
 				{
@@ -456,10 +465,12 @@ bool Graphics::Render()
 					worldMatrix = XMMatrixTranslation(Position.x, Position.y, Position.z);
 
 					VVector CamPos;
+					
 					CamPos.x = VCamera->GetPosition().x;
 					CamPos.y = VCamera->GetPosition().y;
 					CamPos.z = VCamera->GetPosition().z;
-
+					
+					
 
 					const double fov = PI / 4.0;  //suppose 45 degrees FOV
 
@@ -476,6 +487,8 @@ bool Graphics::Render()
 					worldMatrix = VResourceManager->GetGizmo()->WorldMatrix;
 
 				
+					
+
 					Model* VGizmo = VResourceManager->GetGizmo()->GetModel();
 					
 					DrawCallCount++;
@@ -1305,7 +1318,11 @@ void Graphics::RenderBuffers(ID3D11DeviceContext* deviceContext, ID3D11Buffer* v
 	return;
 }
 
-
+void Graphics::SetDirectionalLight(DirectionalLight* Light)
+{
+	VDirectionalLight = Light;
+	VDirectionalLight->GenerateViewMatrix();
+}
 
 void Graphics::Shutdown()
 {

@@ -60,7 +60,7 @@ public:
 	void   CreateGizmo();
 	Gizmo* GetGizmo();
 	static ResourceManager& GetResourceManager();
-
+	void   AddActor(Actor* NewActor);
 	int					 Polycount;
 	int					 GetScenePolycount();
 	ResourceType		 GetTypeByName(string Name);
@@ -70,9 +70,6 @@ public:
 	StaticMesh*			 GetStaticMeshByName(string Name);
 	Texture*			 GetTextureByName(string Name);
 	void				 AddSkeleton(Skeleton* VSkeleton);
-
-private:
-	
 
 	
 private:

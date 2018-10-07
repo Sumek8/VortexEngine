@@ -6,9 +6,16 @@ class Light :
 public:
 	Light();
 	~Light();
-	float Intensity;
+
+	float GetLightIntensity();	
+
+	VColor GetLightColor();
+
 	bool bCastDynamicShadows;
 	bool bCastStaticShadows;
-
+	
+protected:
+	float  Intensity;
+	VColor LightColor;
 };
 
