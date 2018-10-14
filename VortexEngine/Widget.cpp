@@ -323,7 +323,11 @@ void Widget::OnDrag()
 {
 	OnDragDelegate.Execute();
 }
+void Widget::OnRightButtonUp()
+{
+	OnRightMouseButtonUpDelegate.Execute();
 
+}
 
 void Widget::OnLeftButtonDoubleClick()
 {

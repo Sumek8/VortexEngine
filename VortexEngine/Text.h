@@ -20,10 +20,12 @@ public:
 	Text();
 	~Text();
 	void SetText(string Text);
-	
+	bool GetIsMultiline();
 	VAlignment Alignment;
-	string VText;
 	string GetText();
-	
+	void SetIsMultiline(bool isMultiline);
+private:
+	string VText;
+	bool   isMultiline;
 };
 

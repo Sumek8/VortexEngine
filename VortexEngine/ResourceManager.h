@@ -47,20 +47,24 @@ public:
 	//static ResourceManager* ManagerInstance;
 
 	ResourceManager();
-	~ResourceManager();	
+	~ResourceManager();
+	void			CreateMaterial();
+
+	void			CreateTexture();
+
 	bool   AddStaticMesh(StaticMesh* VMesh);
 	bool   AddEngineResource(StaticMesh* VMesh);
 	void   CreateWorld();
-	bool   AddTexture(Texture*);
-	void   Shutdown();
-	void   UpdatePolycount();
-	World* GetWorld(int ID);
-	static VBitmap ImportPNG(string FileName);
-	bool   SaveProject();
-	void   CreateGizmo();
-	Gizmo* GetGizmo();
-	static ResourceManager& GetResourceManager();
-	void   AddActor(Actor* NewActor);
+	bool			    AddTexture(Texture*);
+	void				Shutdown();
+	void				UpdatePolycount();
+	World*				GetWorld(int ID);
+	static				VBitmap ImportPNG(string FileName);
+	bool				SaveProject();
+	void				CreateGizmo();
+	Gizmo*				GetGizmo();
+	static				ResourceManager& GetResourceManager();
+	void				AddActor(Actor* NewActor);
 	int					 Polycount;
 	int					 GetScenePolycount();
 	ResourceType		 GetTypeByName(string Name);
@@ -70,7 +74,10 @@ public:
 	StaticMesh*			 GetStaticMeshByName(string Name);
 	Texture*			 GetTextureByName(string Name);
 	void				 AddSkeleton(Skeleton* VSkeleton);
-
+	vector<StaticMesh*>  GetStaticMeshes();
+	vector<Texture*>     GetTextures();
+	vector<Material*>	 GetMaterials();
+	
 	
 private:
 

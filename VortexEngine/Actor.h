@@ -12,6 +12,7 @@ class Actor :
 public:
 	Actor();
 	VVector GetVelocity();
+	void Update();
 	void UpdatePhysics();
 	~Actor();
 	bool		GetIsVisible();

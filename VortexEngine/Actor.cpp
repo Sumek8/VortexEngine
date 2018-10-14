@@ -15,6 +15,13 @@ VVector Actor::GetVelocity()
 {
 	return Velocity;
 }
+
+void Actor::Update()
+{
+	
+}
+
+
 void Actor::UpdatePhysics()
 {
 	if (Velocity.z < 54.015f)

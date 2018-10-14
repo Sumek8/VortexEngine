@@ -30,22 +30,34 @@ ContentBrowser::ContentBrowser()
 
 	AssetViewer = new Widget;
 	AssetViewer->SetColor(0.3f, 0.3f, 0.3f,1);
-	AssetViewer->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
 
 
+	AssetViewer->OnRightMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateBrowserDropdownList>(SystemClass::GetSystem()->GetWidgetManager());
 	VBottomComposer->AddChildWidget(AssetViewer);
-	
-	OnRightMouseButtonDownDelegate.Bind<ContentBrowser, &ContentBrowser::CreateListWidget>(this);
-
 }
 
-
-void ContentBrowser::CreateListWidget()
+void ContentBrowser::Update()
 {
-	//Widget* ListWidget = CreateWidget<Widget>();
 
-	//AddChildWidget(ListWidget);
+	AssetViewer->RemoveChildren();
+	vector<StaticMesh*>StaticMeshes = SystemClass::GetSystem()->GetResoruceManager()->GetStaticMeshes();
+	vector<Material*>Materials = SystemClass::GetSystem()->GetResoruceManager()->GetMaterials();
+	vector<Texture*>Textures = SystemClass::GetSystem()->GetResoruceManager()->GetTextures();
+	for (size_t i = 0; i < StaticMeshes.size(); i++)
+	{
+		AddItem(StaticMeshes[i]->GetName(),T_StaticMesh);
+	}
+	for (size_t i = 0; i < Materials.size(); i++)
+	{
+		AddItem(Materials[i]->GetName(),T_Material);
+	}
+	for (size_t i = 0; i < Textures.size(); i++)
+	{
+		AddItem(Textures[i]->GetName(),T_Texture);
+	}
+	
 }
+
 
 void ContentBrowser::SetSize(float SizeX, float SizeY)
 {
@@ -62,14 +74,40 @@ void ContentBrowser::LoadItem()
 
 }
 
-void ContentBrowser::AddItem(string AssetName)
+void ContentBrowser::AddItem(string AssetName,ResourceType Type)
 {
 
 	Button* Item = new Button;
 	int Id = AssetViewer->GetChildCount();
+	switch (Type)
+	{
+		case T_None:
+			{
+		Item->SetColor(0.2f, 0.2f, 0.2f, 1.0f);
+		Item->SetMouseOverEndColor(0.5f, 0.5f, 0.5f, 1.0f);
+		break;
+			}
+		case T_StaticMesh:
+			{
+		Item->SetColor(1, 0, 0, 1.0f);
+		Item->SetMouseOverEndColor(1, 0, 0, 1.0f);
+		break;
+			}
+		case T_Material:
+			{
+		Item->SetColor(0.258f, 0.5257f, 0.956, 1.0f);
+		Item->SetMouseOverEndColor(0.258f,0.525f,0.956, 1.0f);
+		break;
+			}
 
-	Item->SetColor(0.5f, 0.5f, 0.5f, 1.0f);
-	Item->SetMouseOverEndColor(0.5f, 0.5f, 0.5f, 1.0f);
+		case T_Texture:
+		{
+			Item->SetColor(0, 1,0, 1.0f);
+			Item->SetMouseOverEndColor(0, 1, 0, 1.0f);
+			break;
+		}
+	}
+	
 	Item->SetRelativeTransform(float(10 + (Id) * 65),5.0f);
 	Item->SetSize(65.0f,100.0f);
 	Item->SetMouseOverColor(0.8f, 0.8f,0.8f, 1);

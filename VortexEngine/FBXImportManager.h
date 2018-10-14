@@ -4,8 +4,6 @@
 #define FBXSDK_SHARED
 
 #include <fstream>
-#include <Commdlg.h>
-#include <shobjidl.h> 
 #include <fbxsdk.h>
 
 

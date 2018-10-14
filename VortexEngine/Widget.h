@@ -52,9 +52,12 @@ class Widget:
 	public	Object
 {
 public:
+
+	void operator= (const Widget& Other) = delete;
 				     Widget();
 	virtual			 ~Widget();
 	virtual void 	 OnDrag();
+	virtual void	 OnRightButtonUp();
 	virtual void	 OnMouseButtonDown();
 	virtual void	 OnMouseOver();
 	virtual void     OnMouseOverEnd();
@@ -119,12 +122,14 @@ public:
 	VVector2		 GetParentTransform();
 	Delegate OnLeftMouseButtonDownDelegate;
 	Delegate OnRightMouseButtonDownDelegate;
+	Delegate OnRightMouseButtonUpDelegate;
 	Delegate OnLeftMouseDoubleClickDelegate;
 	Delegate OnRightMouseDoubleClickDelegate;
 	Delegate OnWheelUpDelegate;
 	Delegate OnWheelDownDelegate;
 	Delegate OnDragDelegate;
 	Delegate OnRemoveDelegate;
+	
 protected:
 	
 	VColor		Color;

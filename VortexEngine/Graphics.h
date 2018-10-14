@@ -102,6 +102,8 @@ public:
 	
 	D3DClass* GetD3DClass();
 
+	void ToggleDrawInterface();
+
 	ID3D11ShaderResourceView* BaseColorMap;
 	ID3D11ShaderResourceView* NormalMap;
 	ID3D11ShaderResourceView* CubeMap;
@@ -145,7 +147,7 @@ private:
 
 	int				 screenWidth,screenHeight;
 
-	bool			 DrawInterface = true;
+	bool			 bDrawInterface = true;
 public:
 	MaterialMaster*	 VMaterialMaster;
 };

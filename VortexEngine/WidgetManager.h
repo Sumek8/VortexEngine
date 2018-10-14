@@ -117,12 +117,13 @@ public:
 	void     RemoveDropdownList();
 	void     CreateGameViewport();
 	void	 CreateOutliner();
-	void	 CreateDropdownList();
+	void	 CreateFileDropdownList();
+	void	 CreateBrowserDropdownList();
 	void	 CreateContentBrowser();
 	void	 CreateMaterialEditor(int WindowID);
 
 	
-	void     UpdateContentBrowser(string AssetName);
+	void     UpdateContentBrowser();
 	void     UpdateWidgets(ResourceManager* VResourceManager);
 	void	 UpdateWorldOutliner(World* VWorld);
 	void	 ResizeWindow(int ID);

@@ -12,12 +12,26 @@ ResourceManager::~ResourceManager()
 
 }
 
+void ResourceManager::CreateMaterial()
+{
+	
+	Material* VMaterial = new Material;
+	VMaterial->SetName("NewMaterial" + to_string(VMaterials.size()));
+	VMaterials.push_back(VMaterial);
+	return;
+
+}
+void ResourceManager::CreateTexture()
+{
+	Texture* VTexture = new Texture;
+	VTextures.push_back(VTexture);
+	return;
+}
+
 void ResourceManager::AddActor(Actor* NewActor)
 {
 	
-	//auto ActorPtr = make_shared<Actor>(NewActor);
-	//ActorPtr->
-	GetWorld(0)->VActors.push_back(NewActor);
+	GetWorld(0)->VActors.push_back(NewActor);	
 }
 
 ResourceType ResourceManager::GetTypeByName(string Name)
@@ -64,7 +78,6 @@ void ResourceManager::CreateWorld()
 {
 	World* VWorld = new World;
 	VWorlds.push_back(VWorld);
-
 }
 
 
@@ -167,8 +180,6 @@ VBitmap ResourceManager::ImportPNG(string FileName)
 		png_bytep row = row_pointers[y];
 		for (int x = 0; x < width; x++) {
 			px = &(row[x * 4]);
-
-			//printf("%4d, %4d = RGBA(%3d, %3d, %3d, %3d)\n", x, y, px[0], px[1], px[2], px[3]);
 			PxArray.push_back(px[0]);
 
 		}
@@ -252,6 +263,23 @@ void ResourceManager::AddSkeleton(Skeleton* VSkeleton)
 	VSkeletons.push_back(VSkeleton);
 
 	return;
+}
+
+vector<StaticMesh*> ResourceManager::GetStaticMeshes()
+{
+	return VStaticMeshes;
+}
+
+vector<Texture*>ResourceManager::GetTextures()
+{
+
+	return VTextures;
+
+}
+
+vector<Material*> ResourceManager::GetMaterials()
+{
+	return VMaterials;
 }
 
 void ResourceManager::Shutdown()

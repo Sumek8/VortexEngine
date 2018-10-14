@@ -4,8 +4,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-
-#include <windows.h>
+#include "WindowsCore.h"
 #include <vector>
 #include <string>
 #include "Math.h"
@@ -18,7 +17,7 @@
 #include "World.h"
 #include "MaterialMaster.h"
 #include "Delegate.h"
-#include "WindowsCore.h"
+
 
 
 class SystemClass
@@ -35,7 +34,7 @@ public:
 	void	     GetResolution(int &horizontal, int &vertical);
 	void		 ReleaseInput();
 	
-
+	WidgetManager* GetWidgetManager();
 	Graphics*	 GetRenderer();
 	LRESULT		 CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	void		 GenerateTerrain();
@@ -49,12 +48,15 @@ public:
 	void		 CreateGrid();
 	void		 Exit();
 	static	     SystemClass* GetSystem();
+	void		 CreateNewProject();
+	ResourceManager* GetResoruceManager();
 	int			 GetSelectedWindow();
 	int			 GetFPS();
 	void		 UpdateInterface();
+	void		 CreateMaterial();
 	VVector		 GetUnprojectedVector();
 	void		 AddObjectToWorld();
-
+	static POINT GetCursorPosition();
 private:
 	RECT		GetWindowsTaskBar();
 	bool		Frame();
@@ -64,13 +66,15 @@ private:
 	void		CreateWidgetManager();
 	bool		ImportFileFromPath(const char* FilePath);
 	void		MouseIntersection();
-	void		UpdateContentBrowser(string AssetName);
+	void		UpdateContentBrowser();
 
 	void CreateDirectionalLight();
 	
 	template<class C>
 	C*		SpawnActor(VVector Location);
 	
+	
+
 	void		ClearDrag();
 	void		Quit();
 

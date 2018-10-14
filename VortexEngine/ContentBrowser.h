@@ -4,11 +4,24 @@
 
 class ContentBrowser : public Widget
 {
+
+	enum ResourceType
+	{
+		T_None,
+		T_Texture,
+		T_Material,
+		T_StaticMesh,
+		T_Skeleton,
+		T_Animation,
+
+	};
+
 public:
-	void CreateListWidget();
 	ContentBrowser();
+	
 	~ContentBrowser();
-	void AddItem(string AssetName);
+	void	Update();
+	void	AddItem(string AssetName,ResourceType Type);
 	Widget* AssetViewer;
 	Widget* FolderViewer;
 	void SetSize(float SizeX, float SizeY);

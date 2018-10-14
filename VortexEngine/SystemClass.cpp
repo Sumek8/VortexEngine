@@ -6,17 +6,14 @@
 
 
 #include "stdafx.h"
+
 #include "SystemClass.h"
 #include "Widget.h"
 #include "ResourceManager.h"
-#include <iostream>
 #include "FBXImportManager.h"
-#include <Lmcons.h>
-#include <fstream>
-#include <sys/types.h>
-#include <experimental/filesystem>
 #include "Physics/Physics.h"
 #include "InputBox.h"
+
 using namespace std;
 
 SystemClass::SystemClass()
@@ -155,6 +152,18 @@ SystemClass* SystemClass::GetSystem()
 
 }
 
+void SystemClass::CreateNewProject()
+{
+
+
+}
+ResourceManager* SystemClass::GetResoruceManager()
+{
+	if (VResourceManager)
+		return VResourceManager;
+	else return 0;
+
+}
 void SystemClass::OpenMaterialEditor()
 {
 	int WindowWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -498,6 +507,20 @@ void SystemClass::AddObjectToWorld()
 	return;
 
 }
+
+
+
+ POINT  SystemClass::GetCursorPosition()
+{
+	 
+	 POINT Point;
+
+	 GetCursorPos(&Point);
+	
+	return Point;
+}
+
+
 void SystemClass::SelectActor(int ID)
 {
 	
@@ -577,8 +600,7 @@ bool SystemClass::Frame()
 			VWidgetManager->DragWidget->SetRelativeTransform(mouseX - ParentTransform.x - VWidgetManager->DragWidget->GetSize().x / 2, mouseY - ParentTransform.y - VWidgetManager->DragWidget->GetSize().y / 2);
 	
 		VWidgetManager->DragWidget->OnDrag();
-		//VWidgetManager->DragWidget->UpdateTransform();
-		//VWidgetManager->DragWidget->UpdateChildTransform();
+		
 		
 		VWidgetManager->ResizeWindow(GetSelectedWindow());
 		UpdateInterface();
@@ -663,9 +685,7 @@ bool SystemClass::Frame()
 	time = clock();
 
 	degree = time / 100;
-	//VGraphics->SetLightRotation(VRotation(0, 0,90));
-	//VGraphics->SetLightRotation(VRotation(0,0,degree));
-
+	
 	if(isAKey|| isDKey|| isSKey|| isWKey)
 	{ 
 		POINT Point;
@@ -1075,6 +1095,11 @@ bool SystemClass::Frame()
 	if (!result)
 	{
 		return false;
+	}
+
+	for each (Actor* Actor in VResourceManager->GetWorld(0)->VActors)
+	{
+		Actor->Update();
 	}
 
 	if (bPhysicsEnabled)
@@ -1517,6 +1542,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			VGraphics->ToggleWireframe();
 			break;
 		}
+		case 114:
+		{
+			VGraphics->ToggleDrawInterface();
+
+		}
 
 		case 70: //F
 			{
@@ -1686,7 +1716,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		mouseX = mousePoint->x;
 		mouseY = mousePoint->y;
 
-		
+		VWidgetManager->RemoveDropdownList();
+		VWidgetManager->ActiveWidget = 0;
 		
 
 		if (isDragging)
@@ -1738,7 +1769,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 	case WM_LBUTTONDOWN:
 	{
-		VWidgetManager->RemoveDropdownList();
+		
 
 		POINT Point;
 		GetCursorPos(&Point);
@@ -1746,11 +1777,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		cursorPos = Point;
 
 		ReleaseInput();
-
-		//HWND ActiveWindow  = GetActiveWindow();
-		//GetWindowRect(ActiveWindow);
-		
-		
+				
 		HWND ActiveWindow = GetFocus();
 		SetForegroundWindow(ActiveWindow);
 		SetActiveWindow(ActiveWindow);
@@ -1813,9 +1840,27 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 	case WM_RBUTTONUP:
 	{
+	
+		
+
 		isRightDown = false;
 		//ShowCursor(true);
-		
+		POINT Cursor = GetCursorPosition();
+
+		Widget* ClickedWidget;
+		ClickedWidget = 0;
+		ClickedWidget = VWidgetManager->GetClickedWidget(Cursor.x, Cursor.y, GetSelectedWindow());
+		if (ClickedWidget)
+		{
+			if (ClickedWidget->GetType() == ViewportWidget)
+				return 0;
+			ClickedWidget->OnRightButtonUp();
+			ReleaseInput();
+		}
+
+		VWidgetManager->ActiveWidget = 0;
+		VWidgetManager->RemoveDropdownList();
+
 		return 0;
 
 	}
@@ -1866,6 +1911,15 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 	return 0;
 }
+
+
+
+WidgetManager* SystemClass::GetWidgetManager()
+{
+
+	return VWidgetManager;
+
+}
 void SystemClass::ClearDrag()
 {
 	
@@ -1880,10 +1934,7 @@ Graphics* SystemClass::GetRenderer()
 	return VGraphics;
 
 }
-void CreateDragWidget()
-{
 
-}
 
 void SystemClass::ReleaseInput()
 {
@@ -1911,8 +1962,8 @@ void SystemClass::CreateViewport()
 {
 	int WindowWidth = GetSystemMetrics(SM_CXSCREEN);
 	int WindowHeight = GetSystemMetrics(SM_CXSCREEN);
-	WindowHeight = 600;
-	WindowWidth = 800;
+	//WindowHeight = 600;
+	//WindowWidth = 800;
 
 
 
@@ -2112,7 +2163,7 @@ bool SystemClass::ImportFileFromPath(const char*  FilePath)
 
 	else if (Extension == "png" || Extension == "tiff" || Extension == "jpg")
 	{
-		
+		VResourceManager->CreateTexture();
 		size_t newsize = strlen(FilePath) + 1;
 		wchar_t * wcstring = new wchar_t[newsize];
 		size_t convertedChars = 0;
@@ -2124,6 +2175,7 @@ bool SystemClass::ImportFileFromPath(const char*  FilePath)
 			if (VGraphics->NormalMap != nullptr)
 				VGraphics->NormalMap->Release();
 			VGraphics->LoadShaderResource(wcstring, &(VGraphics->NormalMap));
+			//VResourceManager->AddTexture()
 		}
 		else  if (FileName.find("_OcclusionRoughnessMetallic") != string::npos)
 		{
@@ -2143,20 +2195,28 @@ bool SystemClass::ImportFileFromPath(const char*  FilePath)
 	}
 	else return false;
 	
-	UpdateContentBrowser(FileName);
+	UpdateContentBrowser();
 
 	VWidgetManager->UpdateWidgets(VResourceManager);
 	return true;
 }
+
+
 void SystemClass::UpdateInterface()
 {
 	VWidgetManager->GetWidgetContainer(GetWindowID(GetActiveWindow()))->CalculateContainer();
 	VGraphics->UpdateInterfaceBuffers(GetWindowID(GetActiveWindow()));
 }
-
-void SystemClass::UpdateContentBrowser(string AssetName)
+void SystemClass::CreateMaterial()
 {
-	VWidgetManager->UpdateContentBrowser(AssetName);
+	VResourceManager->CreateMaterial();
+	UpdateContentBrowser();
+	return;
+
+}
+void SystemClass::UpdateContentBrowser()
+{
+	VWidgetManager->UpdateContentBrowser();
 
 	return;
 }

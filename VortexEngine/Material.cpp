@@ -12,6 +12,15 @@ Material::~Material()
 {
 }
 
+string Material::GetName()
+{
+	return MaterialName;
+}
+void Material::SetName(string Name)
+{
+	MaterialName = Name;
+
+}
 void Material::Shutdown()
 {
 	if (VPixelShader)

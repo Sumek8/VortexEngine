@@ -7,6 +7,6 @@ public:
 	DropDownList();
 	~DropDownList();
 	
-	void AddElement(string Text);
+	Widget* AddElement(string Text);
 };
 

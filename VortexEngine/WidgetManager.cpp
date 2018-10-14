@@ -71,7 +71,6 @@ void WidgetContainer::SetWindowID(int ID)
 void WidgetManager::RemoveDropdownList()
 {
 	
-	return;
 
 	if (GetWidgetContainer(0)->GetWidgetRoot()->GetChildCount() > 1)
 	{
@@ -87,49 +86,7 @@ void WidgetManager::RemoveDropdownList()
 
 
 
-void  WidgetManager::CreateGameViewport()
-{
-	WidgetContainer* GameViewport = CreateWidgetContainer("Game Viewport");
 
-	VVector2 WindowSize = GameViewport->GetWindowSize();
-
-	
-	
-	Composer* VComposer = CreateWidget<Composer>();
-	VComposer->SetEnabled(false);
-	VComposer->SetIsHorizontal(false);
-	VComposer->SetSize(WindowSize.x, WindowSize.y);
-	VComposer->DistributionArray = { 0.05f,0.9f };
-	GameViewport->AddWidget(VComposer,"");
-
-
-	Widget* InfoPanelWidget = CreateWidget<Widget>();
-	InfoPanelWidget->SetName(string("InfoPanel"));
-	InfoPanelWidget->SetColor(0.3f, 0.3f, 0.3f, 1);
-	InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
-	InfoPanelWidget->OnLeftMouseDoubleClickDelegate.Bind<SystemClass, &SystemClass::ResizeViewport>(SystemClass::GetSystem());
-	VComposer->AddChildWidget(InfoPanelWidget);
-
-	Button* ExitButton = CreateWidget<Button>();
-	ExitButton->SetColor(0.8f, 0.8f, 0.8f, 1);
-	ExitButton->SetRelativeTransform(float(WindowSize.x - 25), 2.0f);
-	ExitButton->SetSize(25, 25);
-	ExitButton->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::CloseWindow>(SystemClass::GetSystem());
-	ExitButton->SetName(string("Exit"));
-
-	InfoPanelWidget->AddChildWidget(ExitButton);
-
-
-	Viewport* VViewport = CreateWidget<Viewport>();
-	VViewport->SetName("GameViewport");
-	VComposer->AddChildWidget(VViewport);
-
-	
-	///Container
-	GameViewport->CalculateContainer();
-	
-
-}
 
 void WidgetContainer::SetIsBeingDestroyed(bool Destroyed)
 {
@@ -208,7 +165,7 @@ void WidgetContainer::GetLetterCount()
 	LetterCount = 0;
 	for (size_t i = 0; i < TextList.size(); i++)
 	{
-		LetterCount += int(TextList[i]->VText.size());
+		LetterCount += int(TextList[i]->GetText().size());
 	}
 	return;
 }
@@ -312,6 +269,50 @@ bool WidgetContainer::AddWidget(Widget* newWidget, string parentName = "")
 
 	return true;
 
+
+}
+
+void  WidgetManager::CreateGameViewport()
+{
+	WidgetContainer* GameViewport = CreateWidgetContainer("Game Viewport");
+
+	VVector2 WindowSize = GameViewport->GetWindowSize();
+
+	Canvas* Canva = CreateWidget<Canvas>();
+	GameViewport->AddWidget(Canva);
+
+	Composer* VComposer = CreateWidget<Composer>();
+	VComposer->SetEnabled(false);
+	VComposer->SetIsHorizontal(false);
+	VComposer->SetSize(WindowSize.x, WindowSize.y);
+	Canva->AddChildWidget(VComposer);
+
+
+	Widget* InfoPanelWidget = CreateWidget<Widget>();
+	InfoPanelWidget->SetName(string("InfoPanel"));
+	InfoPanelWidget->SetColor(0.3f, 0.3f, 0.3f, 1);
+	InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
+	InfoPanelWidget->OnLeftMouseDoubleClickDelegate.Bind<SystemClass, &SystemClass::ResizeViewport>(SystemClass::GetSystem());
+	VComposer->AddChildWidget(InfoPanelWidget);
+
+	Button* ExitButton = CreateWidget<Button>();
+	ExitButton->SetColor(0.8f, 0.8f, 0.8f, 1);
+	ExitButton->SetRelativeTransform(float(WindowSize.x - 25), 2.0f);
+	ExitButton->SetSize(25, 25);
+	ExitButton->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::CloseWindow>(SystemClass::GetSystem());
+	ExitButton->SetName(string("Exit"));
+
+	InfoPanelWidget->AddChildWidget(ExitButton);
+
+
+	Viewport* VViewport = CreateWidget<Viewport>();
+	VViewport->SetName("GameViewport");
+	VComposer->AddChildWidget(VViewport);
+
+
+	///Container
+	GameViewport->CalculateContainer();
+	int i = 0;
 
 }
 
@@ -436,7 +437,7 @@ bool WidgetContainer::ClearContainer()
 	
 	
 	 WidgetContainers[ContainerID]->GetWidgetRoot()->GetChildWidget(1)->AddChildWidget(VViewport);
-	// WidgetContainers[ContainerID]->GetWidgetRoot()->GetChildWidget(0)->GetChildWidget(1)->AddChildWidget(VViewport);
+
 	 return;
 
 
@@ -474,13 +475,12 @@ bool WidgetContainer::ClearContainer()
  
  }
 
- void WidgetManager::UpdateContentBrowser(string AssetName)
+ void WidgetManager::UpdateContentBrowser()
  {
 	 ContentBrowser* Browser = 0;
 	 Browser = static_cast<ContentBrowser*>(GetWidgetByName("Content Browser"));
 
-	 if (Browser)
-	 Browser->AddItem(AssetName);
+	 Browser->Update();
 	 WidgetContainers[0]->CalculateContainer();
  }
 
@@ -492,13 +492,16 @@ bool WidgetContainer::ClearContainer()
 	 return;
  }
 
- void WidgetManager::CreateDropdownList()
+ void WidgetManager::CreateFileDropdownList()
  {
+
+	 POINT Cursor = SystemClass::GetCursorPosition();
+
 	
 	 DropDownList* WidgetList = CreateWidget<DropDownList>();
 	 GetWidgetContainer(0)->AddWidget(WidgetList);
-	 WidgetList->SetTransform(ActiveWidget->GetTransform().x,ActiveWidget->GetTransform().y + ActiveWidget->GetSize().y);
-
+	 WidgetList->SetTransform(Cursor.x, Cursor.y - WidgetList->GetSize().y);
+	 WidgetList->AddElement("NewProject");
 	 WidgetList->AddElement("SaveProject");
 	 WidgetList->AddElement("OpenFile");
 	 WidgetList->AddElement("Preferences");
@@ -508,14 +511,34 @@ bool WidgetContainer::ClearContainer()
 
  }
 
+ void WidgetManager::CreateBrowserDropdownList()
+ {
+	 POINT Cursor = SystemClass::GetCursorPosition();
+	 
+	 DropDownList* WidgetList = CreateWidget<DropDownList>();
+	 GetWidgetContainer(0)->AddWidget(WidgetList);
+	
+	 WidgetList->SetTransform(Cursor.x, Cursor.y - WidgetList->GetSize().y);
+	 WidgetList->AddElement("Import File")->OnRightMouseButtonUpDelegate.Bind<SystemClass,&SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
+	 WidgetList->AddElement("Create Material")->OnRightMouseButtonUpDelegate.Bind<SystemClass, &SystemClass::CreateMaterial>(SystemClass::GetSystem());
+	 WidgetList->AddElement("Create Particle System");
+	 WidgetList->AddElement("Properties");
+
+	
+	 
+	 GetWidgetContainer(0)->CalculateContainer();
+	 
+ }
+
  void WidgetManager::CreateContentBrowser()
  {
 	 ContentBrowser* VContentBrowser;
 	 VContentBrowser = CreateWidget<ContentBrowser>();
  
 	
-	 VContentBrowser->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
-	
+	// VContentBrowser->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
+	 VContentBrowser->OnRightMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateBrowserDropdownList>(this);
+
 	 
 	 ActiveWidget->AddChildWidget(VContentBrowser);
 
@@ -598,7 +621,6 @@ Widget* WidgetContainer::GetWidgetRoot()
 	 VComposer = new Composer;
 	 VComposer->SetIsHorizontal(false);
 	 VComposer->SetSize(WindowSize.x, WindowSize.y);
-	 //GetWidgetContainer(0)->AddWidget(VComposer);
 	 BaseCanvas->AddChildWidget(VComposer);
 
 		 Widget* InfoPanelWidget;
@@ -640,7 +662,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 PanelButton->SetSize(40, 25);
 		 PanelButton->SetName(string("File"));
 		 InfoPanelWidget->AddChildWidget(PanelButton);
-		 PanelButton->OnLeftMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateDropdownList>(this);
+		 PanelButton->OnLeftMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateFileDropdownList>(this);
 		 
 
 		 Text* PanelText;
@@ -661,10 +683,6 @@ Widget* WidgetContainer::GetWidgetRoot()
 	 VCenterComposer->SetIsHorizontal(true);
 	 VComposer->AddChildWidget(VCenterComposer);
 
-	// Composer* VCenterComposer2 = new Composer;
-	// VCenterComposer2->SetIsHorizontal(true);
-	// VComposer->AddChildWidget(VCenterComposer2);
-
 	
 	 Panel*  VPanel = new Panel;
 	 VComposer->AddChildWidget(VPanel);
@@ -672,14 +690,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 ContentBrowser* VContentBrowser;
 		 VContentBrowser = new  ContentBrowser;
 		 VPanel->AddChildWidget(VContentBrowser);
-
-		 
-		 /*
-		 DetailPanel* VBottomDetailPanel;
-		 VBottomDetailPanel = new DetailPanel;
-		 VBottomDetailPanel->SetColor(0.3f, 0.3f, 0.3f, 1);
-		 VPanel->AddChildWidget(VBottomDetailPanel);
-		 */
+		
 
 	 Panel*  VLeftPanel = new Panel;
 	 VCenterComposer->AddChildWidget(VLeftPanel);

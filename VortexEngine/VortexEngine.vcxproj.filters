@@ -257,9 +257,6 @@
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Pliki źródłowe\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Pliki źródłowe\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Pliki źródłowe\Object</Filter>
     </ClCompile>
@@ -421,6 +418,9 @@
     </ClCompile>
     <ClCompile Include="DropDownList.cpp">
       <Filter>Pliki źródłowe\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Pliki źródłowe\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

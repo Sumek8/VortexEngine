@@ -13,7 +13,12 @@ public:
 	~Delegate()
 	{}
 
-
+	
+	void Bind(Object* VObject,void (&Function)())
+	{
+		//fn2 = &Call<Object, Function>;
+		//Instance = VObject;
+	}
 
 	template<class C, void (C::*Function)(int i)>
 	 void  Bind(C *instance)

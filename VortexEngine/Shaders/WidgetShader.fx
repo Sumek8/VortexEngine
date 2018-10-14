@@ -46,11 +46,15 @@ PixelInputType WidgetFunctionVS(VertexInputType input)
 float4 WidgetFunctionPS(PixelInputType input) : SV_TARGET
 { 
 	
-	
+	//float x,y;
+
+	//x = abs(float(input.UV.x * 2 - 1));
+	//y = abs((input.UV.y * 2 - 1));
 	float4 color;
 
 	
 	color = input.color;
-
+	//clip(pow((x*y),5) > 0.8 ? -1 : 1);
+		
 	return color;
 }

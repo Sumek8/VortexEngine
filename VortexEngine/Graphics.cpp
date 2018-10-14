@@ -19,7 +19,7 @@ Graphics::Graphics()
 	bApplyPostProcess = true;
 
 	DrawCallCount = 0;
-	DrawInterface = true;
+	bDrawInterface = true;
 }
 
 
@@ -178,7 +178,12 @@ D3DClass* Graphics::GetD3DClass()
 }
 
 
+void Graphics::ToggleDrawInterface()
+{
 
+	bDrawInterface = !bDrawInterface;
+
+}
 
 
 bool Graphics::Frame()
@@ -360,7 +365,8 @@ bool Graphics::Render()
 
 
 				float ViewportAspect = VWidgetManager->WidgetContainers[i]->GetViewportList()[0]->GetViewportAspect();
-
+				if (!bDrawInterface)
+					ViewportAspect = VWidgetManager->WidgetContainers[i]->GetWindowSize().x/ VWidgetManager->WidgetContainers[i]->GetWindowSize().y;
 
 
 				VCamera->GetViewMatrix(viewMatrix);
@@ -520,7 +526,7 @@ bool Graphics::Render()
 			}
 			UpdatePolycount();
 
-			if (DrawInterface)
+			if (bDrawInterface)
 			{
 				////	RenderWidgets////////
 				if (VWidgetManager->GetWidgetContainer(i)->GetWidgetList().size() > 0)
@@ -684,13 +690,15 @@ bool Graphics::CreateViewportBuffer(int WindowID)
 	vector <int>Indices;
 
 
+	
+
 	vector<Viewport*>WidgetList = VWidgetManager->GetWidgetContainer(WindowID)->GetViewportList();
 
 	float ScreenWidth = float(VWidgetManager->GetWidgetContainer(WindowID)->GetWindowSize().x);
 	float ScreenHeight = float(VWidgetManager->GetWidgetContainer(WindowID)->GetWindowSize().y);
 	float ScreenRatio = ScreenWidth / ScreenHeight;
-
-
+	
+	
 
 	
 
@@ -698,8 +706,20 @@ bool Graphics::CreateViewportBuffer(int WindowID)
 
 	for (int i = 0; i < WidgetQuantity; i++)
 	{
-		VVector2 Size = WidgetList[i]->GetSize();
-		VVector2 Transform = WidgetList[i]->GetTransform();
+		VVector2 Size;
+		VVector2 Transform;
+		if (bDrawInterface)
+		{
+			Size = WidgetList[i]->GetSize();
+			Transform = WidgetList[i]->GetTransform();
+		}
+		else
+		{
+			Size = (VVector2(ScreenWidth, ScreenHeight));
+			Transform = (VVector2(VWidgetManager->GetWidgetContainer(WindowID)->GetWindowTransform().x, VWidgetManager->GetWidgetContainer(WindowID)->GetWindowTransform().y));
+
+		}
+		
 
 		
 
@@ -708,7 +728,7 @@ bool Graphics::CreateViewportBuffer(int WindowID)
 			Vertex.position.z = 0;
 			Vertex.color = WidgetList[i]->GetColor();
 
-			//VWidgetManager->GetWidgetContainer(0)
+			
 			Vertex.position.x = Transform.x / ScreenWidth;
 			Vertex.position.y = (Transform.y + Size.y) / ScreenHeight;
 
@@ -1099,6 +1119,7 @@ bool Graphics::CreateTextBuffers(int WindowID)
 	vector<Text*>TextArray = VWidgetManager->GetWidgetContainer(WindowID)->GetTextList();
 	WindowWidth = VWidgetManager->GetWidgetContainer(WindowID)->GetWindowSize().x;
 	WindowHeight = VWidgetManager->GetWidgetContainer(WindowID)->GetWindowSize().y;
+	
 
 	FontType TextFont = Arial;
 
@@ -1159,7 +1180,7 @@ bool Graphics::CreateTextBuffers(int WindowID)
 			float LineOffset = 0;
 			for (int k = 0; k < ASCII.size(); k++)
 			{
-				if (k == UpperIndex && k > 0 && bDivideText)
+				if (k == UpperIndex && k > 0 && bDivideText && TextArray[i]->GetIsMultiline())
 				{
 					Stride = 0;
 					LineOffset += TextFont.size;

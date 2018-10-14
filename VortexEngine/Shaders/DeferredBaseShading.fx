@@ -25,8 +25,6 @@ cbuffer MatrixBuffer : register(b0)
 
 cbuffer ConstantBufferType : register(b1)
 {
-
-
 	float4 LightColor;
 	float3 LightDirection;
 	float  LightPower;
@@ -93,7 +91,7 @@ float GGX_Distribution(float3 n, float3 h, float Roughness)
 float DepthToLinear(float Depth)
 {
 	float far = 1000.0;
-	float near = 1;
+	float near = 0.1;
 	float z = (2 * near) / (far + near - (1 - Depth) * (far - near));
 	return z;
 }
@@ -141,7 +139,7 @@ float SSAO(int Samples,float2 Coordinates,float3 n)
 	if (abs(DeltaDepth) > 0.02f)
 		Occlusion = 1;
 	else
-		Occlusion = pow(1.0f - (DeltaDepth) * 500,0.5f);
+		Occlusion = pow(1.0f - (DeltaDepth) * 1000,0.5f);
 		
 	return Occlusion;
 }
@@ -167,7 +165,7 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 
 	float4 BaseColor = float4(0,0,0,1);
 	float  Roughness = 0.5;
-	float  Metalness = 0;
+	float  Metalness = 0.1;
 	float  SpecularPower = 1;
 	float4 Position;
 	float3 lightDir;
@@ -310,8 +308,7 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	Color = saturate(((1-Metalness)*BaseColor + float4(Specular.xyz, 1))*(LightIntensity)*LightColor + AmbientIntensity*BaseColor);
 	Color = LinearToGamma(Color);
 	//Color = Color*SSAO(10, PIn.texCoord, Normal);
-	//Color = float4(G,1);
-//	Color = float4(Specular,1);
+	//Color = SSAO(10, PIn.texCoord, Normal);
 	
 return	Color;
 }

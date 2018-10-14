@@ -115,12 +115,12 @@ PixelOutputType   PixelShaderFunction(PixelInputType input)
 
 
 	specularPower = 0.4f;
-	roughness = 0.5f;
-	metalness = 0.0f;
+	roughness = 0.2f;
+	metalness = 0.7f;
 
 	
 	Out.Color = BaseColor;
-	Out.RoughnessMetallic.xy = float2(0.4,0);
+	Out.RoughnessMetallic.xy = float2(0.5,0);
 	Out.Depth = input.position.z / input.position.w;
 	
 	return Out;
