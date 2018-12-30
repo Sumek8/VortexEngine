@@ -95,18 +95,18 @@ class Model :
 public:
 	Model();
 	~Model();
-	void		UpdateIndexCount();
-	void		Shutdown();
-	void		SetPivotPoint(float x, float y, float z);
-	void		SetBoundingBox(float MinX, float MinY, float MinZ, float MaxX, float MaxY, float MaxZ);
-	void		CreateBoundingSphere();
-	void		CalculateGeometryCenter();
-	int		    GetIndexCount();
-	VVector     GetPivotPoint();
-	BoundingBox GetBoundingBox();
-	VVector		GeometryCenter;
-
-	vector<Chunk*> Chunks;
+	void				UpdateIndexCount();
+	void				Shutdown();
+	void				SetPivotPoint(float x, float y, float z);
+	void				SetBoundingBox(float MinX, float MinY, float MinZ, float MaxX, float MaxY, float MaxZ);
+	void				CreateBoundingSphere();
+	void				CalculateGeometryCenter();
+	int					GetIndexCount();
+	VVector				GetPivotPoint();
+	BoundingBox			GetBoundingBox();
+	VVector				GeometryCenter;
+	vector<Chunk*>		Chunks;
+	bool				RenderCustomDepth;
 private:
 	
 	int		    VIndexCount;

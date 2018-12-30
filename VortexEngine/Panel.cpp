@@ -15,6 +15,7 @@ Panel::Panel()
 	Underline->SetName("Underline");
 	Underline->SetColor(0.5, 0.5, 0.5, 1);
 	Widget::AddChildWidget(Underline);
+	
 }
 
 void Panel::UpdateChildTransform()
@@ -32,7 +33,7 @@ void Panel::UpdateChildTransform()
 		{
 		
 			ChildWidgets[i]->SetParentTransform(GetTransform().x, GetTransform().y);
-			ChildWidgets[i]->SetRelativeTransform(float(((i/2-1)*130 + 5)),UnderlineSize);
+			ChildWidgets[i]->SetRelativeTransform(float(((i/2-1)*150 + 5)),UnderlineSize);
 			ChildWidgets[i]->UpdateTransform();
 			ChildWidgets[i]->UpdateChildTransform();
 		}

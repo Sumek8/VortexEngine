@@ -405,7 +405,7 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	SkeletonBufferDesc.StructureByteStride = 0;
 
 
-
+	
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -443,6 +443,10 @@ bool PBRShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vs
 	
 		return false;
 	}
+
+
+
+
 
 	
 
@@ -620,17 +624,19 @@ void PBRShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwn
 
 
 
-bool PBRShaderClass::RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor)
+bool PBRShaderClass::RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor, ID3D11ShaderResourceView*CustomTexture)
 {
 
 	deviceContext->PSSetShaderResources(0, 1, &SceneColor);
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	deviceContext->PSSetShaderResources(1, 1, &CustomTexture);
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 
 	
 
 	deviceContext->VSSetShader(PostProcessVertexShader, NULL, 0);
 	deviceContext->PSSetShader(PostProcessPixelShader, NULL, 0);
 
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	deviceContext->Draw(4, 0);
 
 	return true;

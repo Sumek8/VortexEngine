@@ -9,6 +9,7 @@ public:
 	float Intensity;
 	float Attentuation;
 	float Falloff;
+	float Radius;
 	PointLight();
 	~PointLight();
 };

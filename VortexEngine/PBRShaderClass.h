@@ -54,7 +54,7 @@ bool InitializePostProcessShader(ID3D11Device*);
 
 	bool RenderDeferredLightPass(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** GBufferPointer, ID3D11ShaderResourceView* ShadowMap, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix,XMMATRIX& lightProjectionMatrix, XMMATRIX& lightViewMatrix,VRotation& lightDirection, VColor& diffuseColor, VVector& CameraPosition,float LightIntensity);
 	
-	bool RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor);
+	bool RenderPostProcess(ID3D11DeviceContext* deviceContext,ID3D11ShaderResourceView*SceneColor, ID3D11ShaderResourceView*CustomTexture);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
@@ -77,6 +77,9 @@ private:
 
 	ID3D11VertexShader* PostProcessVertexShader;
 	ID3D11PixelShader* PostProcessPixelShader;
+
+	ID3D11VertexShader* AOPostProcessVertexShader;
+	ID3D11PixelShader* AOPostProcessPixelShader;
 
 
 	ID3D11InputLayout* m_layout;

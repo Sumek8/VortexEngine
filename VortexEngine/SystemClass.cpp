@@ -13,7 +13,7 @@
 #include "FBXImportManager.h"
 #include "Physics/Physics.h"
 #include "InputBox.h"
-
+#include "TreeEditor.h"
 using namespace std;
 
 SystemClass::SystemClass()
@@ -126,6 +126,20 @@ bool SystemClass::Initialize()
 	//CreateGrid();
 	CreateGizmo();
 	//GenerateTerrain();
+
+	//Import Tree Mesh
+	/*StaticMesh* TreeMesh = TreeEditor::GenerateTree();
+
+	VGraphics->CreateChunkBuffers(TreeMesh->GetModel());
+	VResourceManager->AddStaticMesh(TreeMesh);
+	VResourceManager->GetWorld(0)->CreateStaticMeshActor(VResourceManager->GetStaticMeshByName(TreeMesh->GetName()));
+	VResourceManager->GetWorld(0)->UpdateStaticMeshPolycount();
+
+	UpdateOutliner();
+
+	UpdateInterface();
+	*///
+
 
 	LoadFilesFromDirectory(ProjectDirectory.c_str());
 
@@ -498,7 +512,10 @@ void SystemClass::AddObjectToWorld()
 		StaticMesh* Mesh = VResourceManager->GetStaticMeshByName(AssetName);
 		if (Mesh)
 		{
-			VResourceManager->GetWorld(0)->CreateStaticMeshActor(Mesh);
+			
+				VResourceManager->GetWorld(0)->CreateStaticMeshActor(Mesh);
+			
+			
 			VResourceManager->GetWorld(0)->UpdateStaticMeshPolycount();
 		
 		UpdateOutliner();
@@ -1115,7 +1132,7 @@ void SystemClass::UpdatePhysics()
 	for (int i = 0; i < VResourceManager->GetWorld(0)->VActors.size(); i++)
 	{
 		bool DoesCollide;
-
+		DoesCollide = false;
 		StaticMeshActor* CollisionActor = dynamic_cast<StaticMeshActor*>(VResourceManager->GetWorld(0)->GetActor(i));
 		if (CollisionActor)
 
@@ -1545,7 +1562,13 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case 114:
 		{
 			VGraphics->ToggleDrawInterface();
+			break;
 
+		}
+		case 115:
+		{
+			VGraphics->TogglePostProcess();
+			break;
 		}
 
 		case 70: //F
@@ -1589,7 +1612,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case 13: //Enter
 			{	
 		
-			//VWidgetManager->GetWidgetContainer((GetSelectedWindow()))->GetViewportList()[0]->ToggleDebugInfo();
+			VWidgetManager->GetWidgetContainer((GetSelectedWindow()))->GetViewportList()[0]->ToggleDebugInfo();
 			
 		
 			

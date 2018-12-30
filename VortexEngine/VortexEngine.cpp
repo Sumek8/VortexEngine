@@ -1,5 +1,4 @@
-// VortexEngine.cpp: Definiuje punkt wejścia dla aplikacji.
-//
+
 
 #include "stdafx.h"
 #include "VortexEngine.h"

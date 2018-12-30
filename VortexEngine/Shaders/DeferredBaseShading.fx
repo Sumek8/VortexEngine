@@ -164,8 +164,8 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	float4 Color = float4(0,0,0,1);
 
 	float4 BaseColor = float4(0,0,0,1);
-	float  Roughness = 0.5;
-	float  Metalness = 0.1;
+	float  Roughness = 0.1;
+	float  Metalness = 0;
 	float  SpecularPower = 1;
 	float4 Position;
 	float3 lightDir;
@@ -179,7 +179,7 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	float  AmbientIntensity = 0.5;	
 	float  ior = 1.5;
 	
-	float3 Specular = 0;
+	float3 Specular = 1;
 	float  Depth;
 	float  ShadowDepth = 0;
 	float  ShadowBlur = 0.5f;
@@ -206,7 +206,6 @@ float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 	Depth = GBufferD.Sample(SampleType, PIn.texCoord.xy).r;
 	//ShadowDepth = ShadowMapSample.Sample(SampleType, PIn.texCoord.xy).r;
 	
-
 	/////WorldSpaceReconstruction//////
 	float x = PIn.texCoord.x * 2 - 1;
 	float y = (1 - PIn.texCoord.y) * 2 - 1;

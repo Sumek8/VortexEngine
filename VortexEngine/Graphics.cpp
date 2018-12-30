@@ -48,7 +48,10 @@ void Graphics::GetLightRotation(VRotation outRotation)
 
 	return;
 }
-
+void Graphics::TogglePostProcess()
+{
+	bApplyPostProcess = !bApplyPostProcess;
+}
 
 
 bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd)
@@ -310,6 +313,8 @@ bool Graphics::Render()
 		VDirectionalLight->GetViewMatrix(lightViewMatrix);
 		VDirectionalLight->GetProjectionMatrix(lightProjectionMatrix);
 	}
+
+	
 	//RenderDynamicShadows
 	if (ObjectCount == 0 )
 		VDirect3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -324,7 +329,7 @@ bool Graphics::Render()
 		if (!bRenderWireframe)
 		{
 			VDirect3D->RenderShadows();
-
+			
 			for (size_t i = 0; i < ObjectCount; i++)
 			{
 
@@ -351,7 +356,7 @@ bool Graphics::Render()
 		}
 	}
 
-
+	
 	int ActiveWindow = SystemClass::GetSystem()->GetSelectedWindow();
 	//RenderToViewport
 	for (int i = 0; i < VWidgetManager->WidgetContainers.size(); i++)
@@ -366,7 +371,7 @@ bool Graphics::Render()
 
 				float ViewportAspect = VWidgetManager->WidgetContainers[i]->GetViewportList()[0]->GetViewportAspect();
 				if (!bDrawInterface)
-					ViewportAspect = VWidgetManager->WidgetContainers[i]->GetWindowSize().x/ VWidgetManager->WidgetContainers[i]->GetWindowSize().y;
+					ViewportAspect = VWidgetManager->WidgetContainers[i]->GetWindowSize().x / VWidgetManager->WidgetContainers[i]->GetWindowSize().y;
 
 
 				VCamera->GetViewMatrix(viewMatrix);
@@ -394,7 +399,7 @@ bool Graphics::Render()
 
 								DrawCallCount++;
 								RenderBuffers(VDirect3D->GetDeviceContext(), StaticActor->Mesh->GetModel()->Chunks[j]->VVertexBuffer, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexBuffer);
-								result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexCount,BaseColorMap, NormalMap, VDirect3D->pShadowMapSRView, CubeMap);
+								result = VShaderClass->Render(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexCount, BaseColorMap, NormalMap, VDirect3D->pShadowMapSRView, CubeMap);
 
 							}
 						}
@@ -406,51 +411,78 @@ bool Graphics::Render()
 				if (bRenderWireframe)
 					VDirect3D->SetWireframeMode(false);
 
-			 //Rotation Correction
+				//Rotation Correction
 				VRotation CameraRot = VCamera->GetRotation();
 				CameraRot.Yaw -= 90;
-				
+
 				float     LightIntensity = 0;
 				VRotation LightDirection = VRotation(0, 0, 0);
 				VColor    LightColor = VColor(1, 1, 1, 1);
-					if (VDirectionalLight)
+				if (VDirectionalLight)
+				{
+					if (VDirectionalLight->GetIsVisible())
 					{
-						if (VDirectionalLight->GetIsVisible())
-						{
-							LightIntensity = VDirectionalLight->GetLightIntensity();
-							LightDirection = VDirectionalLight->GetRotation();
-							LightColor = VDirectionalLight->GetLightColor();
-						}
+						LightIntensity = VDirectionalLight->GetLightIntensity();
+						LightDirection = VDirectionalLight->GetRotation();
+						LightColor = VDirectionalLight->GetLightColor();
 					}
+				}
 				///////RenderLightPass/////////
 				VDirect3D->SetDeferredRenderTarget();
 				VDirect3D->GetProjectionMatrix(projectionMatrix, ViewportAspect);
 				VCamera->GetViewMatrix(viewMatrix);
-				result = VShaderClass->RenderDeferredLightPass(VDirect3D->GetDeviceContext(),VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix,LightDirection,LightColor,RotationToVector(CameraRot), LightIntensity);
-			
-			if (!result)
-				{
-					return false;
-				}
+				result = VShaderClass->RenderDeferredLightPass(VDirect3D->GetDeviceContext(), VDirect3D->GetGBufferResource(), VDirect3D->pShadowMapSRView, worldMatrix, viewMatrix, projectionMatrix, lightProjectionMatrix, lightViewMatrix, LightDirection, LightColor, RotationToVector(CameraRot), LightIntensity);
+
+				// HBAO+ Pass
 
 				if (bApplyPostProcess)
 				{
+					VDirect3D->RenderAO();
+
+					VDirect3D->RenderCustomDepth();
+					for (size_t i = 0; i < VWorld->GetSelectedActorsCount(); i++)
+					{
+
+						StaticMeshActor* StaticActor = dynamic_cast<StaticMeshActor*>(VWorld->GetSelectedActor(i));
+						if (StaticActor)
+							if (StaticActor->Mesh->GetModel()->RenderCustomDepth && StaticActor->bIsVisible)
+							{
+
+								StaticActor->CalculateMatrix();
+								worldMatrix = StaticActor->WorldMatrix;
+
+								for (size_t j = 0; j < StaticActor->Mesh->GetModel()->Chunks.size(); j++)
+								{
+									DrawCallCount++;
+									RenderBuffers(VDirect3D->GetDeviceContext(), StaticActor->Mesh->GetModel()->Chunks[j]->VVertexBuffer, StaticActor->Mesh->GetModel()->Chunks[j]->VIndexBuffer);
+									result = VDepthShader->SetShaderParameters(VDirect3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, StaticActor->Mesh->GetModel()->Chunks.at(j)->VIndexCount);
+									if (!result)
+
+										return false;
+								}
+							}
+
+					}
+
+
 					///PostProcess Pass1
 					VDirect3D->SetPostProcessRenderTarget(1);
-					result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(0));
-
+					//result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(2), VDirect3D->pShadowMapSRView);
+					//AO
+					result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(0), VDirect3D->GetPostProcessResourceView(2));
 					//VDirect3D->SetBlurRenderTarget();
 					//result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(0));
 
-					
+
 
 
 					//PostProcess RenderToBackBuffer
 					VDirect3D->SetPostProcessRenderTarget(0);
-					result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(1));
-				   // result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetBlurResourceView());
-					
+					result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetPostProcessResourceView(1), VDirect3D->GetPostProcessResourceView(2));
+					// result = VShaderClass->RenderPostProcess(VDirect3D->GetDeviceContext(), VDirect3D->GetBlurResourceView());					
 				}
+			
+
 				///WidgetPass
 
 				//Gizmo

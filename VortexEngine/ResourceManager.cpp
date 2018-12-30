@@ -233,7 +233,7 @@ void ResourceManager::UpdatePolycount()
 
 	for (size_t i = 0; i < VStaticMeshes.size(); i++)
 	{
-		ScenePolycount += VStaticMeshes.at(i)->GetPolycount();
+		ScenePolycount += VStaticMeshes.at(i)->GetModel()->GetIndexCount() / 3;
 	}
 
 	Polycount = ScenePolycount;

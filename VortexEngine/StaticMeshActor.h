@@ -18,7 +18,6 @@ public:
 	~StaticMeshActor();
 	StaticMesh* Mesh;
 	bool bEnablePhysics;
-
 	void Shutdown();
 };
 

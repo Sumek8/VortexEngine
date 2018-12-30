@@ -4,6 +4,7 @@
 
 Model::Model()
 {
+	RenderCustomDepth = true;
 }
 
 

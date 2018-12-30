@@ -10,7 +10,7 @@ public:
 
 	
 
-	void RenderShader(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* Texture);
+	void RenderShader(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* Texture, ID3D11ShaderResourceView* Texture2);
 	bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
 	void ShutdownShader();
 	bool Initialize(ID3D11Device*, HWND);

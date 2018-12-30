@@ -492,6 +492,24 @@ bool WidgetContainer::ClearContainer()
 	 return;
  }
 
+ void WidgetManager::CreateTabDropdownList()
+ {
+	 POINT Cursor = SystemClass::GetCursorPosition();
+
+
+	 DropDownList* WidgetList = CreateWidget<DropDownList>();
+	 GetWidgetContainer(0)->AddWidget(WidgetList);
+	 WidgetList->SetTransform(Cursor.x, Cursor.y - WidgetList->GetSize().y);
+	 WidgetList->AddElement("ContentBrowser")->OnRightMouseButtonUpDelegate.Bind<WidgetManager,&WidgetManager::CreateContentBrowser>(this);
+	 WidgetList->AddElement("DetailPanel");
+	 WidgetList->AddElement("MaterialPanel");
+	 WidgetList->AddElement("Viewport");
+
+
+	 GetWidgetContainer(0)->CalculateContainer();
+
+
+ }
  void WidgetManager::CreateFileDropdownList()
  {
 
@@ -536,15 +554,15 @@ bool WidgetContainer::ClearContainer()
 	 VContentBrowser = CreateWidget<ContentBrowser>();
  
 	
-	// VContentBrowser->OnRightMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::OpenFileBrowser>(SystemClass::GetSystem());
+	
 	 VContentBrowser->OnRightMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateBrowserDropdownList>(this);
 
-	 
-	 ActiveWidget->AddChildWidget(VContentBrowser);
+	
+	static_cast<Panel*>(ActiveWidget)->AddChildWidget(VContentBrowser);
 
 
 	 GetWidgetContainer(0)->CalculateContainer();
-
+	 SystemClass::GetSystem()->UpdateInterface();
 
 	 return;
  }
@@ -627,7 +645,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 InfoPanelWidget = new Widget;
 		 InfoPanelWidget->SetName(string("InfoPanel"));
 		 InfoPanelWidget->SetColor(0.3f, 0.3f, 0.3f, 1);
-		// InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
+		 InfoPanelWidget->OnLeftMouseButtonDownDelegate.Bind<SystemClass, &SystemClass::BeginDragViewport>(SystemClass::GetSystem());
 		 InfoPanelWidget->OnLeftMouseDoubleClickDelegate.Bind<SystemClass, &SystemClass::ResizeViewport>(SystemClass::GetSystem());
 		 VComposer->AddChildWidget(InfoPanelWidget);
 
@@ -685,8 +703,11 @@ Widget* WidgetContainer::GetWidgetRoot()
 
 	
 	 Panel*  VPanel = new Panel;
+	 VPanel->SetName("Panel1");
 	 VComposer->AddChildWidget(VPanel);
-	
+	// VPanel->OnRightMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateTabDropdownList>(this);
+	 VPanel->OnRightMouseButtonDownDelegate.Bind<WidgetManager, &WidgetManager::CreateContentBrowser>(this);
+
 		 ContentBrowser* VContentBrowser;
 		 VContentBrowser = new  ContentBrowser;
 		 VPanel->AddChildWidget(VContentBrowser);
@@ -705,7 +726,6 @@ Widget* WidgetContainer::GetWidgetRoot()
 		 Viewport* VViewport;
 		 VViewport = new  Viewport;
 		 VCenterComposer->AddChildWidget(VViewport);
-		 //VComposer->AddChildWidget(VViewport);
 		 VViewport->SetColor(1, 1, 1, 1);
 		 //VisualDebugger
 
@@ -771,6 +791,7 @@ Widget* WidgetContainer::GetWidgetRoot()
 		VCenterComposer->SetIsHorizontal(true);
 	    VCenterComposer->DistributionArray = { 0.7f,0.3f};
 	    VComposer->AddChildWidget(VCenterComposer);
+
 
 			Composer* VCenterLeftComposer;
 			VCenterLeftComposer = new Composer;

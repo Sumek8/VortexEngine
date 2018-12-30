@@ -13,7 +13,6 @@ SamplerState Sampler : register(s0);
 
 
 Texture2D SceneColor : register(t0);
-Texture2D CustomDepth : register(t1);
 
 struct PixelInputType
 {
@@ -69,27 +68,6 @@ float4 ChromaticAberration(float4 Color, float2 texCoord)
 	return AberrationColor;
 }
 
-float Outline(float Size, float2 texCoord)
-{	
-	float Value = 0;
-
-	float PixelX = 1.0f / ScreenWidth;
-	float PixelY = 1.0f / ScreenHeight;
-
-	float2 PixelSize = float2(PixelX, PixelY);
-	for (int x = -1; x <= 1; x++)
-	{
-		for (int y = -1; y <= 1; y++)
-		{
-			PixelSize = float2(PixelX*x, PixelY*y);
-			Value += (1-CustomDepth.Sample(Sampler, texCoord + PixelSize * Size).r)*1000;
-		}
-	}
-	Value = saturate(Value) - saturate((1-CustomDepth.Sample(Sampler, texCoord).r)*1000);
-	return Value;
-
-}
-
 float4 Blur(float4 Color,float2 texCoord)
 {
 	float4 Blur = float4(0, 0, 0, 0);
@@ -110,21 +88,13 @@ float4 Blur(float4 Color,float2 texCoord)
 float4 PixelShaderFunction(PixelInputType PIn) : SV_TARGET
 {
 float4 Color = float4(0, 0, 0, 0);
-float4 OutlineColor = float4(1,0.8f,0,0);
+	
 Color = SceneColor.Sample(Sampler, PIn.texCoord);
 
-
+//Color = Blur(Color, PIn.texCoord);
 //Color = Desaturate(Color,0);
 //Color = ChromaticAberration(Color, PIn.texCoord);
 //Color = rgb2luma(Color);
-
-			//Apply Outline
-//Color = lerp(Color,OutlineColor,Outline(5, PIn.texCoord));
-
-Color = Color*CustomDepth.Sample(Sampler, PIn.texCoord);
-
-//Color = Blur(Color, PIn.texCoord);
 //Color.xyz = ACESFilm(Color.xyz);
 return	Color;
 }
-

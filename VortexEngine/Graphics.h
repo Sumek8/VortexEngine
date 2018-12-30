@@ -25,8 +25,6 @@
 #include "Font.h"
 #include "Text.h"
 #include "Viewport.h"
-
-
 #ifdef DIRECTX
 #include <d3d11.h>
 #include "D3DClass.h"
@@ -82,7 +80,7 @@ public:
 	void SetDirectionalLight(DirectionalLight * Light);
 	void RenderWidgetBuffers(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer);
 	void ToggleWireframe();
-
+	void TogglePostProcess();
 
 
 	void SetResourceManager(ResourceManager* SrcManager);
@@ -96,7 +94,7 @@ public:
 	bool CreateViewportBuffer(int WindowID);
 	bool CreateLineListBuffer(int WindowID);
 	
-
+	
 	PBRShaderClass* GetShader();
 
 	

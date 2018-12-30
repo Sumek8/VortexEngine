@@ -25,7 +25,7 @@ bool PostProcessShader::Initialize(ID3D11Device* device, HWND hwnd)
 
 
 
-void PostProcessShader::RenderShader(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* Texture)
+void PostProcessShader::RenderShader(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* Texture, ID3D11ShaderResourceView* Texture2)
 {
 	// Set the vertex and pixel shaders that will be used to render this triangle.
 
@@ -35,6 +35,7 @@ void PostProcessShader::RenderShader(ID3D11DeviceContext* deviceContext, ID3D11S
 
 	deviceContext->PSSetSamplers(0, 1, &TextureSampler);
 	deviceContext->PSSetShaderResources(0, 1, &Texture);
+	deviceContext->PSSetShaderResources(1, 1, &Texture);
 
 	// Render the triangle.
 	deviceContext->Draw(4, 0);

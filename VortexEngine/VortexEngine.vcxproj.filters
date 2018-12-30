@@ -240,6 +240,9 @@
     <ClInclude Include="DropDownList.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="TreeEditor.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp">
@@ -422,6 +425,9 @@
     <ClCompile Include="Material.cpp">
       <Filter>Pliki źródłowe\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="TreeEditor.cpp">
+      <Filter>Pliki źródłowe\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VortexEngine.rc">
@@ -471,6 +477,9 @@
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\DeferredBaseShading.fx">
+      <Filter>Pliki źródłowe\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\CustomDepth.fx">
       <Filter>Pliki źródłowe\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

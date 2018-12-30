@@ -120,9 +120,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	ID3D11RenderTargetView* RenderTargetView;
 
 
-	ScreenWidth = 1366;
-	ScreenHeight = 768;
-
+	
 	//ScreenWidth = 1920;
 	//ScreenHeight = 1080;
 
@@ -178,17 +176,23 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 		return false;
 	}
 
+	ScreenWidth = displayModeList[numModes - 1].Width;
+	ScreenHeight = displayModeList[numModes - 1].Height;
+	
+
 	// Now go through all the display modes and find the one that matches the screen width and height.
 	// When a match is found store the numerator and denominator of the refresh rate for that monitor.
 	for (i = 0; i<numModes; i++)
 	{
-		if (displayModeList[i].Width == (unsigned int)screenWidth)
+		if (displayModeList[i].Width == (unsigned int)ScreenWidth)
 		{
-			if (displayModeList[i].Height == (unsigned int)screenHeight)
+			if (displayModeList[i].Height == (unsigned int)ScreenHeight)
 			{
 				numerator = displayModeList[i].RefreshRate.Numerator;
 				denominator = displayModeList[i].RefreshRate.Denominator;
 			}
+			else numerator = 60;
+			denominator = 1;
 		}
 	}
 
@@ -553,7 +557,8 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	if (FAILED(VDevice->CreateRenderTargetView(BlurPostProcessBuffer, &BlurRTViewDesc, &BlurPostProcessRTV)))  return false;
 	if (FAILED(VDevice->CreateShaderResourceView(BlurPostProcessBuffer, &BlurSRVDesc, &BlurPostProcessSRV))) return false;
 	
-
+	
+	
 
 
 //////////Blend State Description////////////////////////
@@ -602,6 +607,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Create an orthographic projection matrix for 2D rendering.
 	m_orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 	
+	InitializeHBAO();
 
 	return true;
 }
@@ -636,6 +642,10 @@ void D3DClass::SetWireframeMode(bool bSetWireframe)
 	}
 	HRESULT result = VDevice->CreateRasterizerState(&rasterDesc, &m_rasterState);
 	VDeviceContext->RSSetState(m_rasterState);
+
+
+	
+
 
 }
 
@@ -845,11 +855,67 @@ void D3DClass::Shutdown()
 		VBlendState = 0;
 	}
 
-
-
+	if (VBlendState)
+	{
+		AOContext->Release();
+		AOContext = 0;
+	}
 	return;
 }
 
+void D3DClass::InitializeHBAO()
+{
+	GFSDK_SSAO_CustomHeap CustomHeap;
+	CustomHeap.new_ = ::operator new;
+	CustomHeap.delete_ = ::operator delete;
+
+	
+	SSAOStatus = GFSDK_SSAO_CreateContext_D3D11(VDevice, &AOContext, &CustomHeap);
+	assert(SSAOStatus == GFSDK_SSAO_OK); // HBAO+ requires feature level 11_0 or above
+	
+	GFSDK_SSAO_Float4x4 Projection;
+	float ProjectionMatrix[16];
+	for (size_t i = 0; i < 4; i++)
+	{
+		for (size_t y = 0; y < 4; y++)
+		{
+			Projection.Array[y + i * 4] = m_projectionMatrix.r[i].m128_f32[y];
+			//ProjectionMatrix[y + i * 4] = m_projectionMatrix.r[i].m128_f32[y];
+		}
+	}
+
+	
+
+	
+	Input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
+	Input.DepthData.pFullResDepthTextureSRV = GBufferSRView[3];
+	Input.DepthData.ProjectionMatrix.Data = Projection;
+	Input.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
+	Input.DepthData.MetersToViewSpaceUnits = 10.0f;
+	//Input.NormalData.pFullResNormalTextureSRV = GBufferSRView[1];
+	//Input.NormalData.Enable = true;
+	
+	
+	Params.Radius = 2.f;
+	Params.Bias = 0.1f;
+	Params.PowerExponent = 2.f;
+	Params.Blur.Enable = true;
+	Params.Blur.Radius = GFSDK_SSAO_BLUR_RADIUS_4;
+	Params.Blur.Sharpness = 4.f;
+
+	Output.pRenderTargetView = PostProcessRTV[2];
+	Output.Blend.Mode = GFSDK_SSAO_OVERWRITE_RGB;
+	
+}
+
+void D3DClass::RenderAO()
+{
+	
+
+	SSAOStatus = AOContext->RenderAO(VDeviceContext,Input,Params,Output);
+	assert(SSAOStatus == GFSDK_SSAO_OK);
+
+}
 
 void D3DClass::SetDeferredRenderTarget()
 {
@@ -858,6 +924,7 @@ void D3DClass::SetDeferredRenderTarget()
 	
 	return;
 }
+
 
 void D3DClass::SetPostProcessRenderTarget(int PostProcessTarget)
 {
@@ -906,6 +973,19 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 	
 	return;
 }
+void D3DClass::SetSSAORenderTarget(int ID)
+{
+	VDeviceContext->RSSetViewports(1, &viewport);
+	VDeviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	VDeviceContext->OMSetRenderTargets(1, &PostProcessRTV[ID], m_depthStencilView);
+}
+void D3DClass::SetCustomDepthBuffer()
+{
+	VDeviceContext->OMSetRenderTargets(1, &PostProcessRTV[0], nullptr);
+	VDeviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	VDeviceContext->OMSetRenderTargets(BufferCount, GBufferRTView, m_depthStencilView);
+}
+
 void D3DClass::SetGBufferRenderTarget()
 {
 
@@ -975,7 +1055,16 @@ void D3DClass::RenderShadows()
 	VDeviceContext->ClearDepthStencilView(pShadowMapDepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 }
+void D3DClass::RenderCustomDepth()
+{
 
+	VDeviceContext->RSSetViewports(1, &textureviewport);
+
+	VDeviceContext->OMSetRenderTargets(0, 0, pShadowMapDepthView);
+
+	VDeviceContext->ClearDepthStencilView(pShadowMapDepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+}
 
 void D3DClass::EndScene()
 {

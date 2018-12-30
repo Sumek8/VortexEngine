@@ -121,7 +121,7 @@ public:
 	void	 CreateBrowserDropdownList();
 	void	 CreateContentBrowser();
 	void	 CreateMaterialEditor(int WindowID);
-
+	void	 CreateTabDropdownList();
 	
 	void     UpdateContentBrowser();
 	void     UpdateWidgets(ResourceManager* VResourceManager);

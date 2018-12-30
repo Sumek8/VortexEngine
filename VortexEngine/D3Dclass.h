@@ -5,15 +5,16 @@
 #pragma comment(lib, "D3D11.lib")
 #pragma comment(lib, "Dxgi.lib")
 #pragma comment(lib, "D3Dcompiler.lib")
+#pragma comment(lib, "GFSDK_SSAO_D3D11.win64.lib")
 #include <vector>
 #include <D3D11.h>
 #include <directxmath.h>
 #include <dxgi1_2.h>
 #include "Math.h"
-
+#include "Lib/hbao+3.0/include/GFSDK_SSAO.h"
 
 const int BufferCount = 4;
-const int PostProcessBuffers = 2;
+const int PostProcessBuffers = 3;
 
 using namespace std;
 
@@ -29,6 +30,7 @@ public:
 
 	void RenderShadows();
 	void BeginScene(float, float, float, float);
+	void SetCustomDepthBuffer();
 	void EndScene();
 	void ClearBlendState();
 
@@ -42,16 +44,20 @@ public:
 	void  GetOrthoMatrix(XMMATRIX&);
 	void  SetDeferredRenderTarget();
 	void  RenderGizmo();	
+	void  RenderCustomDepth();
 	void  GetVideoCardInfo(char*, int&);
 	void  SetPostProcessRenderTarget(int PostProcessTarget);
 	void  SetGBufferRenderTarget();
-	void SetBlurRenderTarget();
+	void  SetBlurRenderTarget();
+	void  InitializeHBAO();
 	ID3D11ShaderResourceView * GetBlurResourceView();
 	void  SetWindowRenderTarget(int ID);
 	float GetPixelDepth(int mouseX, int mouseY);
 	void  SetWireframeMode(bool SetWireframe);
 	int   GetSwapChainCount();
 	void  RemoveSwapChain(int ID);
+	void  RenderAO();
+	void  SetSSAORenderTarget(int ID);
 	int   GetBackBufferSize(int Resolution);
 	ID3D11ShaderResourceView** GetGBufferResource();
 	ID3D11ShaderResourceView* GetShaderResourceView(int view);
@@ -66,7 +72,14 @@ public:
 
 	ID3D11BlendState*		  VBlendState;
 
-						  
+
+
+	GFSDK_SSAO_InputData_D3D11 Input;
+	GFSDK_SSAO_Parameters Params;
+	GFSDK_SSAO_Status SSAOStatus;
+	GFSDK_SSAO_Context_D3D11* AOContext;
+	GFSDK_SSAO_Output_D3D11 Output;
+	
 private:
 	int			BackBufferSize[2];
 	bool		m_vsync_enabled;
